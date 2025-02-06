@@ -155,13 +155,29 @@ function Controls() {
       top="3%"
       right="0"
       width="20%"
-      height="94vh" // or use calc: "calc(100% - 3%)"
+      height="94vh"
       overflowY="auto"
       display="flex"
       justifyContent="center"
-      alignItems="center"
+      alignItems="flex-start"
+      sx={{
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+      }}
     >
-      <VStack w="90%">
+      <VStack w="90%" spacing={4} pb="60px">
         <Heading as="h3" size="lg" mb="10px">
           Configurator
         </Heading>
