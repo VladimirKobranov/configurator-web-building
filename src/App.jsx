@@ -334,12 +334,12 @@ export default function App() {
       gridData.map((item) => item.balconyAccessoriesMeshType),
     );
     setGridData(gridData);
-    console.log("grid data: ", gridData);
+    //console.log("grid data: ", gridData);
   };
 
   useEffect(() => {
     generateGrid();
-    console.log("updated");
+    //console.log("updated");
   }, [
     sliderValueX,
     sliderValueY,
@@ -443,14 +443,14 @@ export default function App() {
           <meshLambertMaterial color="#e0e0e0" />
         </mesh>
 
-        <EffectComposer multisampling={4}>
+        <EffectComposer multisampling={2} enableNormalPass>
           <N8AO
             fullRes
             color="black"
             aoRadius={2}
             intensity={1}
-            aoSamples={8}
-            denoiseSamples={8}
+            aoSamples={4}
+            denoiseSamples={4}
           />
           <SMAA />
           <SSAO />
