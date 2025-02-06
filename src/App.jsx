@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,
@@ -41,7 +41,7 @@ function Loader() {
 }
 
 export default function App() {
-  /* eslint-disable-line */
+  /* eslint-disable no-unused-vars */
   const [meshPositions, setMeshPositions] = useState([]);
   const [meshRotations, setMeshRotations] = useState([]);
   const [meshType, setMeshType] = useState([]);
@@ -51,7 +51,7 @@ export default function App() {
   const [balconyAccessoriesMeshType, setBalconyAccessoriesMeshType] = useState(
     [],
   );
-  /* eslint-enable-line */
+  /* eslint-enable no-unused-vars, no-console */
   const [gridData, setGridData] = useState([]);
 
   const xTile = 3.0;
@@ -79,9 +79,9 @@ export default function App() {
   const { rotateSpeed } = useContext(SliderContext);
 
   const seedRandom = require("seedrandom");
-  let generator = seedRandom(seed);
 
-  const generateGrid = () => {
+  const generateGrid = useCallback(() => {
+    const generator = seedRandom(seed);
     const gridData = [];
 
     for (let x = 0.0; x < sliderValueX; x++) {
@@ -335,16 +335,35 @@ export default function App() {
     );
     setGridData(gridData);
     //console.log("grid data: ", gridData);
-  };
-
-  useEffect(() => {
-    generateGrid();
-    //console.log("updated");
   }, [
     sliderValueX,
     sliderValueY,
     sliderValueZ,
+    doorSide,
+    doorPosition,
+    balconyPosition,
+    balconySide,
+    pipeBool,
+    airCondBool,
+    airCondPercentage,
     seed,
+    roofAccessoriesPercentage,
+    roofAccessoriesBool,
+    balconyAccessoriesPercentage,
+    balconyAccessoriesBool,
+    xTile,
+    yTile,
+    zTile,
+    seedRandom
+  ]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    generateGrid();
+  }, [
+    sliderValueX,
+    sliderValueY,
+    sliderValueZ,
     doorSide,
     doorPosition,
     balconyPosition,
@@ -357,6 +376,7 @@ export default function App() {
     roofAccessoriesBool,
     balconyAccessoriesPercentage,
     balconyAccessoriesBool,
+    generateGrid,
   ]);
 
   return (
