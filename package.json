@@ -1,8 +1,7 @@
 {
   "name": "three_js",
-  "version": "0.1.0",
-  "homepage": "https://vladimirkobranov.github.io/building_configurator_web",
-  "private": true,
+  "version": "1.2.0",
+  "private": false,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@chakra-ui/react": "^2.8.0",
@@ -27,11 +26,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "dev": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
