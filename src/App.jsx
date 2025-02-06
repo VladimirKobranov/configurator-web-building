@@ -367,13 +367,13 @@ export default function App() {
     >
       <Suspense fallback={<Loader />}>
         <SoftShadows samples={8} focus={2} size={2} />
-        <color attach="background" args={["#d0d0d0"]} />
+        <color attach="background" args={["#e0e0e0"]} />
         <ambientLight intensity={0.3} color={"white"} />
         <directionalLight
           position={[-25, 25, 25]}
           intensity={5}
           castShadow
-          shadow-bias={0.00001}
+          shadow-bias={0.0001}
           shadow-mapSize-width={512}
           shadow-mapSize-height={512}
           shadow-camera-near={0.1}
@@ -394,59 +394,69 @@ export default function App() {
           />
         ))}
         {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.pipeMeshType}
-            position={item.position}
-            rotation={item.rotation}
-          />
+          <group key={index}>
+            {item.meshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.meshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.pipeMeshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.pipeMeshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.aircondMeshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.aircondMeshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.roofAccessoriesMesh !== "null" && (
+              <Model
+                scale={1}
+                name={item.roofAccessoriesMesh}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.balconyAccessoriesMesh !== "null" && (
+              <Model
+                scale={1}
+                name={item.balconyAccessoriesMesh}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+          </group>
         ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.aircondMeshType}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.roofAccessoriesMesh}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.balconyAccessoriesMesh}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {/*</PivotControls>*/}
-        <mesh receiveShadow castShadow rotation-x={degToRad(-90)}>
-          <planeGeometry args={[100, 100]} rotate={[90, 0, 0]} />
-          <meshLambertMaterial color="#F2F2F2" />
+
+        <mesh receiveShadow rotation-x={-Math.PI / 2}>
+          <planeGeometry args={[100, 100]} />
+          <meshLambertMaterial color="#e0e0e0" />
         </mesh>
-        <EffectComposer multisampling={10}>
+
+        <EffectComposer multisampling={4}>
           <N8AO
             fullRes
             color="black"
             aoRadius={2}
             intensity={1}
-            aoSamples={32}
-            denoiseSamples={32}
+            aoSamples={8}
+            denoiseSamples={8}
           />
           <SMAA />
           <SSAO />
           <FXAA />
         </EffectComposer>
+
         <OrbitControls
           autoRotate
           autoRotateSpeed={rotateSpeed}

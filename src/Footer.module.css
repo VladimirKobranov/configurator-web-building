@@ -2,9 +2,7 @@
   position: absolute;
   width: 104px;
   height: 18px;
-  bottom: -50px;
-  font-family: "Roboto", sans-serif;
-
+  bottom: -140px;
   font-style: normal;
   font-weight: 300;
   font-size: 15px;
@@ -17,4 +15,3 @@
 
   color: #868686;
 }
-

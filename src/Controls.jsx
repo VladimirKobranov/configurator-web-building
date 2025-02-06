@@ -155,10 +155,11 @@ function Controls() {
       top="3%"
       right="0"
       width="20%"
+      height="94vh" // or use calc: "calc(100% - 3%)"
+      overflowY="auto"
       display="flex"
       justifyContent="center"
       alignItems="center"
-      height="auto"
     >
       <VStack w="90%">
         <Heading as="h3" size="lg" mb="10px">
