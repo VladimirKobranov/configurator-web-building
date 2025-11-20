@@ -2,7 +2,7 @@
 
 `PANELKA`
 
-#### The app link: [Configurator](https://vladimirkobranov.github.io/building_configurator_web/)
+#### The app link: [Configurator](http://building-configurator.web.app)
 
 <sub>version 0.9</sub>
 
