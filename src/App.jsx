@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,
@@ -41,7 +41,7 @@ function Loader() {
 }
 
 export default function App() {
-  /* eslint-disable-line */
+  /* eslint-disable no-unused-vars */
   const [meshPositions, setMeshPositions] = useState([]);
   const [meshRotations, setMeshRotations] = useState([]);
   const [meshType, setMeshType] = useState([]);
@@ -51,7 +51,7 @@ export default function App() {
   const [balconyAccessoriesMeshType, setBalconyAccessoriesMeshType] = useState(
     [],
   );
-  /* eslint-enable-line */
+  /* eslint-enable no-unused-vars, no-console */
   const [gridData, setGridData] = useState([]);
 
   const xTile = 3.0;
@@ -79,9 +79,9 @@ export default function App() {
   const { rotateSpeed } = useContext(SliderContext);
 
   const seedRandom = require("seedrandom");
-  let generator = seedRandom(seed);
 
-  const generateGrid = () => {
+  const generateGrid = useCallback(() => {
+    const generator = seedRandom(seed);
     const gridData = [];
 
     for (let x = 0.0; x < sliderValueX; x++) {
@@ -334,17 +334,36 @@ export default function App() {
       gridData.map((item) => item.balconyAccessoriesMeshType),
     );
     setGridData(gridData);
-    console.log("grid data: ", gridData);
-  };
-
-  useEffect(() => {
-    generateGrid();
-    console.log("updated");
+    //console.log("grid data: ", gridData);
   }, [
     sliderValueX,
     sliderValueY,
     sliderValueZ,
+    doorSide,
+    doorPosition,
+    balconyPosition,
+    balconySide,
+    pipeBool,
+    airCondBool,
+    airCondPercentage,
     seed,
+    roofAccessoriesPercentage,
+    roofAccessoriesBool,
+    balconyAccessoriesPercentage,
+    balconyAccessoriesBool,
+    xTile,
+    yTile,
+    zTile,
+    seedRandom
+  ]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    generateGrid();
+  }, [
+    sliderValueX,
+    sliderValueY,
+    sliderValueZ,
     doorSide,
     doorPosition,
     balconyPosition,
@@ -357,6 +376,7 @@ export default function App() {
     roofAccessoriesBool,
     balconyAccessoriesPercentage,
     balconyAccessoriesBool,
+    generateGrid,
   ]);
 
   return (
@@ -367,13 +387,13 @@ export default function App() {
     >
       <Suspense fallback={<Loader />}>
         <SoftShadows samples={8} focus={2} size={2} />
-        <color attach="background" args={["#d0d0d0"]} />
+        <color attach="background" args={["#e0e0e0"]} />
         <ambientLight intensity={0.3} color={"white"} />
         <directionalLight
           position={[-25, 25, 25]}
           intensity={5}
           castShadow
-          shadow-bias={0.00001}
+          shadow-bias={0.0001}
           shadow-mapSize-width={512}
           shadow-mapSize-height={512}
           shadow-camera-near={0.1}
@@ -394,59 +414,69 @@ export default function App() {
           />
         ))}
         {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.pipeMeshType}
-            position={item.position}
-            rotation={item.rotation}
-          />
+          <group key={index}>
+            {item.meshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.meshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.pipeMeshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.pipeMeshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.aircondMeshType !== "null" && (
+              <Model
+                scale={1}
+                name={item.aircondMeshType}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.roofAccessoriesMesh !== "null" && (
+              <Model
+                scale={1}
+                name={item.roofAccessoriesMesh}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+            {item.balconyAccessoriesMesh !== "null" && (
+              <Model
+                scale={1}
+                name={item.balconyAccessoriesMesh}
+                position={item.position}
+                rotation={item.rotation}
+              />
+            )}
+          </group>
         ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.aircondMeshType}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.roofAccessoriesMesh}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.balconyAccessoriesMesh}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
-        {/*</PivotControls>*/}
-        <mesh receiveShadow castShadow rotation-x={degToRad(-90)}>
-          <planeGeometry args={[100, 100]} rotate={[90, 0, 0]} />
-          <meshLambertMaterial color="#F2F2F2" />
+
+        <mesh receiveShadow rotation-x={-Math.PI / 2}>
+          <planeGeometry args={[100, 100]} />
+          <meshLambertMaterial color="#e0e0e0" />
         </mesh>
-        <EffectComposer multisampling={10}>
+
+        <EffectComposer multisampling={2} enableNormalPass>
           <N8AO
             fullRes
             color="black"
             aoRadius={2}
             intensity={1}
-            aoSamples={32}
-            denoiseSamples={32}
+            aoSamples={4}
+            denoiseSamples={4}
           />
           <SMAA />
           <SSAO />
           <FXAA />
         </EffectComposer>
+
         <OrbitControls
           autoRotate
           autoRotateSpeed={rotateSpeed}

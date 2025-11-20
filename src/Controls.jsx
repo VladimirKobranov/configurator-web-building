@@ -20,7 +20,7 @@ import { SliderContext } from "./ChakraInit";
 import Footer from "./Footer";
 
 function Controls() {
-  /* eslint-disable-line */
+  /* eslint-disable no-unused-vars */
   const { sliderValueX, setSliderValueX } = useContext(SliderContext);
   const { sliderValueY, setSliderValueY } = useContext(SliderContext);
   const { sliderValueZ, setSliderValueZ } = useContext(SliderContext);
@@ -46,7 +46,8 @@ function Controls() {
     useContext(SliderContext);
   const { balconyAccessoriesBool, setBalconyAccessoriesBool } =
     useContext(SliderContext);
-  /* eslint-enable-line */
+
+  /* eslint-enable no-unused-vars, no-console */
 
   function onSliderChangeX(val) {
     setSliderValueX(val);
@@ -155,12 +156,29 @@ function Controls() {
       top="3%"
       right="0"
       width="20%"
+      height="94vh"
+      overflowY="auto"
       display="flex"
       justifyContent="center"
-      alignItems="center"
-      height="auto"
+      alignItems="flex-start"
+      sx={{
+        "&::-webkit-scrollbar": {
+          width: "8px",
+        },
+        "&::-webkit-scrollbar-track": {
+          background: "#f1f1f1",
+          borderRadius: "4px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "#888",
+          borderRadius: "4px",
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#555",
+        },
+      }}
     >
-      <VStack w="90%">
+      <VStack w="90%" spacing={4} pb="60px">
         <Heading as="h3" size="lg" mb="10px">
           Configurator
         </Heading>
@@ -413,3 +431,4 @@ function Controls() {
 }
 
 export default Controls;
+
