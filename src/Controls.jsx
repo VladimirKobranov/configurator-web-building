@@ -153,32 +153,17 @@ function Controls() {
   return (
     <Box
       position="absolute"
-      top="3%"
+      top="0"
       right="0"
-      width="20%"
-      height="94vh"
+      width="400px"
+      minW="400px"
+      height="100%"
       overflowY="auto"
       display="flex"
       justifyContent="center"
       alignItems="flex-start"
-      sx={{
-        "&::-webkit-scrollbar": {
-          width: "8px",
-        },
-        "&::-webkit-scrollbar-track": {
-          background: "#f1f1f1",
-          borderRadius: "4px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          background: "#888",
-          borderRadius: "4px",
-        },
-        "&::-webkit-scrollbar-thumb:hover": {
-          background: "#555",
-        },
-      }}
     >
-      <VStack w="90%" spacing={4} pb="60px">
+      <VStack w="90%" spacing={4} pb="20px" pt="20px">
         <Heading as="h3" size="lg" mb="10px">
           Configurator
         </Heading>
@@ -431,4 +416,3 @@ function Controls() {
 }
 
 export default Controls;
-

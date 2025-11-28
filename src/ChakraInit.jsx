@@ -65,14 +65,15 @@ function ChakraInit() {
           setBalconyAccessoriesBool,
         }}
       >
-        <Box w="80%" h="100%">
+        <Box w="calc(100% - 400px)" h="100%">
           <App />
         </Box>
-        <Controls />
+        <Box minW="400px" bg="red.100">
+          <Controls />
+        </Box>
       </SliderContext.Provider>
     </ChakraProvider>
   );
 }
 
 export default ChakraInit;
-

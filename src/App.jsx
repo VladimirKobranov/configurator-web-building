@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useEffect, useState, useCallback } from "react";
+import { Suspense, useContext, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,
@@ -22,6 +22,8 @@ import {
   CircularProgressLabel,
   Text,
 } from "@chakra-ui/react";
+
+import seedRandom from "seedrandom";
 
 function Loader() {
   const { progress } = useProgress();
@@ -77,8 +79,6 @@ export default function App() {
   const { balconyAccessoriesBool } = useContext(SliderContext);
 
   const { rotateSpeed } = useContext(SliderContext);
-
-  const seedRandom = require("seedrandom");
 
   const generateGrid = useCallback(() => {
     const generator = seedRandom(seed);
@@ -354,7 +354,7 @@ export default function App() {
     xTile,
     yTile,
     zTile,
-    seedRandom
+    seedRandom,
   ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
