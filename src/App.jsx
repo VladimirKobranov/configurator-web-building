@@ -9,7 +9,7 @@ import {
 } from "@react-three/drei";
 import { SliderContext } from "./ChakraInit";
 import { Model } from "./Model";
-import { degToRad } from "three/src/math/MathUtils";
+import { MathUtils } from "three";
 import {
   EffectComposer,
   FXAA,
@@ -43,17 +43,6 @@ function Loader() {
 }
 
 export default function App() {
-  /* eslint-disable no-unused-vars */
-  const [meshPositions, setMeshPositions] = useState([]);
-  const [meshRotations, setMeshRotations] = useState([]);
-  const [meshType, setMeshType] = useState([]);
-  const [pipeMeshType, setPipeMeshType] = useState([]);
-  const [aircondMeshType, setAircondMeshType] = useState([]);
-  const [roofAccessoriesMeshType, setRoofAccessoriesMeshType] = useState([]);
-  const [balconyAccessoriesMeshType, setBalconyAccessoriesMeshType] = useState(
-    [],
-  );
-  /* eslint-enable no-unused-vars, no-console */
   const [gridData, setGridData] = useState([]);
 
   const xTile = 3.0;
@@ -94,9 +83,9 @@ export default function App() {
           ];
           if (sliderValueX === 1 || sliderValueY === 0 || sliderValueZ === 1)
             break;
-          let angleX = degToRad(0);
-          let angleY = degToRad(0);
-          let angleZ = degToRad(0);
+          let angleX = MathUtils.degToRad(0);
+          let angleY = MathUtils.degToRad(0);
+          let angleZ = MathUtils.degToRad(0);
           let mesh = "null";
           let pipeMesh = "null";
           let aircondMesh = "null";
@@ -106,7 +95,7 @@ export default function App() {
           // main floor
           if (x === 0 || x === sliderValueX - 1) {
             if (x === 0) {
-              angleY = degToRad(180); //Front facade
+              angleY = MathUtils.degToRad(180); //Front facade
               if (z === 0 || z === sliderValueZ - 1) {
                 if (y === sliderValueY) {
                   mesh = "Ceiling_corner";
@@ -125,8 +114,8 @@ export default function App() {
                   }
                 }
                 z === sliderValueZ - 1
-                  ? (angleY = degToRad(270))
-                  : (angleY = degToRad(180));
+                  ? (angleY = MathUtils.degToRad(270))
+                  : (angleY = MathUtils.degToRad(180));
               } else {
                 if (y === sliderValueY) {
                   mesh = "Ceiling";
@@ -166,7 +155,7 @@ export default function App() {
                 }
               }
             } else {
-              angleY = degToRad(0); //Back facade
+              angleY = MathUtils.degToRad(0); //Back facade
               if (z === 0 || z === sliderValueZ - 1) {
                 if (y === sliderValueY) {
                   mesh = "Ceiling_corner";
@@ -185,8 +174,8 @@ export default function App() {
                   }
                 }
                 z === sliderValueZ - 1
-                  ? (angleY = degToRad(0))
-                  : (angleY = degToRad(90));
+                  ? (angleY = MathUtils.degToRad(0))
+                  : (angleY = MathUtils.degToRad(90));
               } else if (y === 0 && doorSide === "Back" && z === doorPosition) {
                 mesh = "Door_0";
               } else {
@@ -223,7 +212,7 @@ export default function App() {
               }
             }
           } else if (z === 0) {
-            angleY = degToRad(90); //Left facade
+            angleY = MathUtils.degToRad(90); //Left facade
             if (y === sliderValueY) {
               mesh = "Ceiling";
             } else if (y === 0 && doorSide === "Left" && x === doorPosition) {
@@ -257,7 +246,7 @@ export default function App() {
               }
             }
           } else if (z === sliderValueZ - 1) {
-            angleY = degToRad(270); //Right facade
+            angleY = MathUtils.degToRad(270); //Right facade
             if (y === sliderValueY) {
               mesh = "Ceiling";
             } else if (y === 0 && doorSide === "Right" && x === doorPosition) {
@@ -322,17 +311,6 @@ export default function App() {
         }
       }
     }
-    setMeshPositions(gridData.map((item) => item.position));
-    setMeshRotations(gridData.map((item) => item.rotation));
-    setMeshType(gridData.map((item) => item.mesh));
-    setPipeMeshType(gridData.map((item) => item.pipeMeshType));
-    setAircondMeshType(gridData.map((item) => item.aircondMeshType));
-    setRoofAccessoriesMeshType(
-      gridData.map((item) => item.roofAccessoriesMeshType),
-    );
-    setBalconyAccessoriesMeshType(
-      gridData.map((item) => item.balconyAccessoriesMeshType),
-    );
     setGridData(gridData);
     //console.log("grid data: ", gridData);
   }, [
@@ -354,10 +332,8 @@ export default function App() {
     xTile,
     yTile,
     zTile,
-    seedRandom,
   ]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     generateGrid();
   }, [
@@ -465,7 +441,6 @@ export default function App() {
 
         <EffectComposer multisampling={2} enableNormalPass>
           <N8AO
-            fullRes
             color="black"
             aoRadius={2}
             intensity={1}
@@ -473,7 +448,12 @@ export default function App() {
             denoiseSamples={4}
           />
           <SMAA />
-          <SSAO />
+          <SSAO
+            worldDistanceThreshold={1}
+            worldDistanceFalloff={0}
+            worldProximityThreshold={1}
+            worldProximityFalloff={0}
+          />
           <FXAA />
         </EffectComposer>
 

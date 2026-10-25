@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import {
   Box,
   Checkbox,
@@ -30,7 +30,6 @@ function Controls() {
 
   const { doorSide, setDoorSide } = useContext(SliderContext);
   const { doorPosition, setDoorPosition } = useContext(SliderContext);
-  const [selectedDoorSide, setSelectedDoorSide] = useState("Front");
 
   const { balconyPosition, setBalconyPosition } = useContext(SliderContext);
   const { balconySide, setBalconySide } = useContext(SliderContext);
@@ -47,7 +46,7 @@ function Controls() {
   const { balconyAccessoriesBool, setBalconyAccessoriesBool } =
     useContext(SliderContext);
 
-  /* eslint-enable no-unused-vars, no-console */
+  /* eslint-enable no-unused-vars */
 
   function onSliderChangeX(val) {
     setSliderValueX(val);
@@ -141,14 +140,6 @@ function Controls() {
   function onSliderChangeBalconyAccessoriesPercentage(val) {
     setBalconyAccessoriesPercentage(val);
   }
-
-  useEffect(() => {
-    if (doorSide === "Front" || doorSide === "Back") {
-      setSelectedDoorSide(sliderValueZ - 2);
-    } else {
-      setSelectedDoorSide(sliderValueX - 2);
-    }
-  }, [doorSide, sliderValueX, sliderValueZ]);
 
   return (
     <Box
