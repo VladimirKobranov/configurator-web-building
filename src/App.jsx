@@ -9,13 +9,6 @@ import {
 import { SliderContext } from "./configurator-context";
 import { Model } from "./Model";
 import { MathUtils } from "three";
-import {
-  EffectComposer,
-  FXAA,
-  N8AO,
-  SMAA,
-  SSAO,
-} from "@react-three/postprocessing";
 import seedRandom from "seedrandom";
 
 function Loader() {
@@ -71,8 +64,15 @@ export default function App() {
 
   const { rotateSpeed } = useContext(SliderContext);
 
+  const buildingHeight = sliderValueY * yTile;
+  const footprintRadius = Math.hypot(
+    (sliderValueX * xTile) / 2,
+    (sliderValueZ * zTile) / 2,
+  );
+  const shadowExtent = Math.max(18, footprintRadius + buildingHeight * 0.75);
+  const lightDistance = Math.max(15, buildingHeight);
+
   const generateGrid = useCallback(() => {
-    const generator = seedRandom(seed);
     const gridData = [];
 
     for (let x = 0.0; x < sliderValueX; x++) {
@@ -85,6 +85,10 @@ export default function App() {
           ];
           if (sliderValueX === 1 || sliderValueY === 0 || sliderValueZ === 1)
             break;
+          // Each feature has its own draw, so changing one setting cannot
+          // shift the random choices for other cells or features.
+          const randomFor = (feature) =>
+            seedRandom(`${seed}:${x}:${y}:${z}:${feature}`)();
           let angleX = MathUtils.degToRad(0);
           let angleY = MathUtils.degToRad(0);
           let angleZ = MathUtils.degToRad(0);
@@ -133,25 +137,25 @@ export default function App() {
                     balconyPosition.includes(z) &&
                     balconySide.includes("Front")
                   ) {
-                    mesh = `Window_balcony_${Math.floor(generator() * 7)}`;
+                    mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                     if (
-                      Math.floor(
-                        generator() * 100 < balconyAccessoriesPercentage &&
-                          balconyAccessoriesBool,
-                      )
+                      balconyAccessoriesBool &&
+                      randomFor("balcony-accessory-chance") * 100 <
+                        balconyAccessoriesPercentage
                     ) {
                       balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
-                        generator() * 5,
+                        randomFor("balcony-accessory-variant") * 5,
                       )}`;
                     }
                   } else {
-                    mesh = `Window_${Math.floor(generator() * 3)}`;
+                    mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                     if (
-                      Math.floor(generator() * 100) < airCondPercentage &&
                       airCondBool &&
-                      y !== 0
+                      y !== 0 &&
+                      randomFor("air-conditioner-chance") * 100 <
+                        airCondPercentage
                     ) {
-                      aircondMesh = `AirCond_${Math.floor(generator() * 3)}`;
+                      aircondMesh = `AirCond_${Math.floor(randomFor("air-conditioner-variant") * 3)}`;
                     }
                   }
                 }
@@ -189,25 +193,25 @@ export default function App() {
                     balconyPosition.includes(z) &&
                     balconySide.includes("Back")
                   ) {
-                    mesh = `Window_balcony_${Math.floor(generator() * 7)}`;
+                    mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                     if (
-                      Math.floor(
-                        generator() * 100 < balconyAccessoriesPercentage &&
-                          balconyAccessoriesBool,
-                      )
+                      balconyAccessoriesBool &&
+                      randomFor("balcony-accessory-chance") * 100 <
+                        balconyAccessoriesPercentage
                     ) {
                       balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
-                        generator() * 5,
+                        randomFor("balcony-accessory-variant") * 5,
                       )}`;
                     }
                   } else {
-                    mesh = `Window_${Math.floor(generator() * 3)}`;
+                    mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                     if (
-                      Math.floor(generator() * 100) < airCondPercentage &&
                       airCondBool &&
-                      y !== 0
+                      y !== 0 &&
+                      randomFor("air-conditioner-chance") * 100 <
+                        airCondPercentage
                     ) {
-                      aircondMesh = `AirCond_${Math.floor(generator() * 3)}`;
+                      aircondMesh = `AirCond_${Math.floor(randomFor("air-conditioner-variant") * 3)}`;
                     }
                   }
                 }
@@ -225,25 +229,24 @@ export default function App() {
                 balconyPosition.includes(x) &&
                 balconySide.includes("Left")
               ) {
-                mesh = `Window_balcony_${Math.floor(generator() * 7)}`;
+                mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                 if (
-                  Math.floor(
-                    generator() * 100 < balconyAccessoriesPercentage &&
-                      balconyAccessoriesBool,
-                  )
+                  balconyAccessoriesBool &&
+                  randomFor("balcony-accessory-chance") * 100 <
+                    balconyAccessoriesPercentage
                 ) {
                   balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
-                    generator() * 5,
+                    randomFor("balcony-accessory-variant") * 5,
                   )}`;
                 }
               } else {
-                mesh = `Window_${Math.floor(generator() * 3)}`;
+                mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                 if (
-                  Math.floor(generator() * 100) < airCondPercentage &&
                   airCondBool &&
-                  y !== 0
+                  y !== 0 &&
+                  randomFor("air-conditioner-chance") * 100 < airCondPercentage
                 ) {
-                  aircondMesh = `AirCond_${Math.floor(generator() * 3)}`;
+                  aircondMesh = `AirCond_${Math.floor(randomFor("air-conditioner-variant") * 3)}`;
                 }
               }
             }
@@ -259,25 +262,24 @@ export default function App() {
                 balconyPosition.includes(x) &&
                 balconySide.includes("Right")
               ) {
-                mesh = `Window_balcony_${Math.floor(generator() * 7)}`;
+                mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                 if (
-                  Math.floor(
-                    generator() * 100 < balconyAccessoriesPercentage &&
-                      balconyAccessoriesBool,
-                  )
+                  balconyAccessoriesBool &&
+                  randomFor("balcony-accessory-chance") * 100 <
+                    balconyAccessoriesPercentage
                 ) {
                   balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
-                    generator() * 5,
+                    randomFor("balcony-accessory-variant") * 5,
                   )}`;
                 }
               } else {
-                mesh = `Window_${Math.floor(generator() * 3)}`;
+                mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                 if (
-                  Math.floor(generator() * 100) < airCondPercentage &&
                   airCondBool &&
-                  y !== 0
+                  y !== 0 &&
+                  randomFor("air-conditioner-chance") * 100 < airCondPercentage
                 ) {
-                  aircondMesh = `AirCond_${Math.floor(generator() * 3)}`;
+                  aircondMesh = `AirCond_${Math.floor(randomFor("air-conditioner-variant") * 3)}`;
                 }
               }
             }
@@ -286,11 +288,12 @@ export default function App() {
             if (y === sliderValueY) {
               mesh = "Ceiling_cap";
               if (
-                Math.floor(generator() * 100) < roofAccessoriesPercentage &&
-                roofAccessoriesBool
+                roofAccessoriesBool &&
+                randomFor("roof-accessory-chance") * 100 <
+                  roofAccessoriesPercentage
               ) {
                 roofAccessoriesMesh = `RoofAccessories_${Math.floor(
-                  generator() * 4,
+                  randomFor("roof-accessory-variant") * 4,
                 )}`;
               }
             } else {
@@ -349,7 +352,6 @@ export default function App() {
     pipeBool,
     airCondBool,
     airCondPercentage,
-    rotateSpeed,
     roofAccessoriesPercentage,
     roofAccessoriesBool,
     balconyAccessoriesPercentage,
@@ -359,37 +361,38 @@ export default function App() {
 
   return (
     <Canvas
-      shadows={"percentage"}
-      camera={{ position: [-50, 20, -40], fov: 30 }}
-      gl={{ antialias: false }}
+      shadows="soft"
+      camera={{
+        position: [59.65926550172887, 27.97469288957793, 44.075194097748856],
+        fov: 30,
+      }}
     >
       <Suspense fallback={<Loader />}>
-        <color attach="background" args={["#e0e0e0"]} />
-        <ambientLight intensity={0.3} color={"white"} />
+        <color attach="background" args={["#ececec"]} />
+        <ambientLight intensity={0.4} />
         <directionalLight
-          position={[-25, 25, 25]}
-          intensity={5}
+          position={[
+            Math.sin(MathUtils.degToRad(114)) * lightDistance,
+            1.3 * lightDistance,
+            Math.cos(MathUtils.degToRad(114)) * lightDistance,
+          ]}
+          intensity={2}
           castShadow
-          shadow-bias={0.0001}
-          shadow-mapSize-width={512}
-          shadow-mapSize-height={512}
-          shadow-camera-near={0.1}
-          shadow-camera-far={500}
-          shadow-camera-left={-100}
-          shadow-camera-right={100}
-          shadow-camera-top={100}
-          shadow-camera-bottom={-100}
+          shadow-mapSize={[4096, 4096]}
+          shadow-bias={-0.0001}
+          shadow-normalBias={0.02}
+          shadow-camera-near={1}
+          shadow-camera-far={lightDistance * 4}
+          shadow-camera-left={-shadowExtent}
+          shadow-camera-right={shadowExtent}
+          shadow-camera-top={shadowExtent}
+          shadow-camera-bottom={-shadowExtent}
         />
-        <Environment preset="city" />
-        {gridData.map((item, index) => (
-          <Model
-            scale={1}
-            key={index}
-            name={item.meshType}
-            position={item.position}
-            rotation={item.rotation}
-          />
-        ))}
+        <Environment
+          preset="city"
+          background={false}
+          environmentIntensity={0.4}
+        />
         {gridData.map((item, index) => (
           <group key={index}>
             {item.meshType !== "null" && (
@@ -435,33 +438,15 @@ export default function App() {
           </group>
         ))}
 
-        <mesh receiveShadow rotation-x={-Math.PI / 2}>
+        <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, -0.01, 0]}>
           <planeGeometry args={[100, 100]} />
-          <meshLambertMaterial color="#e0e0e0" />
+          <shadowMaterial transparent opacity={0.28} />
         </mesh>
-
-        <EffectComposer multisampling={2} enableNormalPass>
-          <N8AO
-            color="black"
-            aoRadius={2}
-            intensity={1}
-            aoSamples={4}
-            denoiseSamples={4}
-          />
-          <SMAA />
-          <SSAO
-            worldDistanceThreshold={1}
-            worldDistanceFalloff={0}
-            worldProximityThreshold={1}
-            worldProximityFalloff={0}
-          />
-          <FXAA />
-        </EffectComposer>
 
         <OrbitControls
           autoRotate
           autoRotateSpeed={rotateSpeed}
-          target={[5, 5, 5]}
+          target={[2.071960069931832, 7.753846057383639, -1.9649509145582764]}
           makeDefault
         />
       </Suspense>
