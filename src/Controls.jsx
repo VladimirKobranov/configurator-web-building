@@ -169,7 +169,7 @@ function Controls({ open, onToggle }) {
               Configurator
             </span>
             <span className="block text-xs text-muted-foreground">
-              Shape your building
+              Shape your panelka
             </span>
           </span>
         </Button>
