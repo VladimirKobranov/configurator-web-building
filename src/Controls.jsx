@@ -1,12 +1,12 @@
-import { useContext, useId, useState } from "react";
+import { useContext, useEffect, useId } from "react";
 import { Settings2 } from "lucide-react";
 import { SliderContext } from "./configurator-context";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 function RangeControl({
   label,
@@ -101,11 +101,22 @@ function Controls({ open, onToggle }) {
     setBalconyAccessoriesBool,
   } = useContext(SliderContext);
 
-  const [balconyInput, setBalconyInput] = useState(balconyPosition.join(", "));
+  const maxBalconyPosition = Math.max(
+    1,
+    Math.max(sliderValueX, sliderValueZ) - 2,
+  );
   const sideLength =
     doorSide === "Front" || doorSide === "Back" ? sliderValueZ : sliderValueX;
   const maxDoorPosition = Math.max(1, sideLength - 2);
   const canPlaceDoor = sideLength > 2;
+
+  useEffect(() => {
+    setBalconyPosition((positions) =>
+      positions.filter(
+        (position) => position >= 1 && position <= maxBalconyPosition,
+      ),
+    );
+  }, [maxBalconyPosition, setBalconyPosition]);
 
   function updateDimension(side, value) {
     if (side === "x") {
@@ -134,28 +145,12 @@ function Controls({ open, onToggle }) {
     setDoorPosition((position) => Math.min(position, Math.max(1, length - 2)));
   }
 
-  function updateBalconySides(side, checked) {
-    setBalconySide((current) =>
-      checked
-        ? current.includes(side)
-          ? current
-          : [...current, side]
-        : current.filter((item) => item !== side),
+  function toggleBalconyPosition(position) {
+    setBalconyPosition((current) =>
+      current.includes(position)
+        ? current.filter((item) => item !== position)
+        : [...current, position].sort((a, b) => a - b),
     );
-  }
-
-  function commitBalconyPositions(value) {
-    const parsed = value
-      .split(",")
-      .map((part) => Number.parseInt(part.trim(), 10))
-      .filter(Number.isFinite);
-    if (parsed.length === 0) {
-      setBalconyPosition([1, 3]);
-      setBalconyInput("1, 3");
-    } else {
-      setBalconyPosition(parsed);
-      setBalconyInput(parsed.join(", "));
-    }
   }
 
   return (
@@ -269,42 +264,57 @@ function Controls({ open, onToggle }) {
           </h2>
           <div className="space-y-3">
             <div className="space-y-2">
-              <Label htmlFor="balcony-positions">Positions</Label>
-              <Input
-                id="balcony-positions"
-                inputMode="numeric"
-                value={balconyInput}
-                onChange={(event) => setBalconyInput(event.target.value)}
-                onBlur={(event) => commitBalconyPositions(event.target.value)}
-                aria-describedby="balcony-positions-help"
-                placeholder="1, 3, 4, 6"
-                className="h-9"
-              />
-              <p
-                id="balcony-positions-help"
-                className="text-xs text-muted-foreground"
+              <Label>Balcony positions</Label>
+              <div
+                className="grid grid-cols-6 gap-1"
+                role="group"
+                aria-label="Balcony positions"
               >
-                Separate positions with commas.
+                {Array.from({ length: maxBalconyPosition }, (_, index) => {
+                  const position = index + 1;
+                  const selected = balconyPosition.includes(position);
+                  return (
+                    <Button
+                      key={position}
+                      type="button"
+                      size="sm"
+                      variant={selected ? "default" : "outline"}
+                      aria-label={`Position ${position}`}
+                      aria-pressed={selected}
+                      onClick={() => toggleBalconyPosition(position)}
+                      className="w-full"
+                    >
+                      {position}
+                    </Button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Select positions for enabled facade sides.
               </p>
             </div>
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">Facade sides</legend>
-              <div className="grid grid-cols-2 gap-1">
-                {["Front", "Back", "Left", "Right"].map((side) => {
-                  const id = `balcony-side-${side.toLowerCase()}`;
-                  return (
-                    <ToggleField
-                      key={side}
-                      id={id}
-                      label={side}
-                      checked={balconySide.includes(side)}
-                      onCheckedChange={(checked) =>
-                        updateBalconySides(side, checked)
-                      }
-                    />
-                  );
-                })}
-              </div>
+              <ToggleGroup
+                multiple
+                value={balconySide}
+                onValueChange={setBalconySide}
+                aria-label="Balcony facade sides"
+                variant="outline"
+                size="lg"
+                className="w-full flex-nowrap"
+              >
+                {["Front", "Back", "Left", "Right"].map((side) => (
+                  <ToggleGroupItem
+                    key={side}
+                    value={side}
+                    aria-label={side}
+                    className="min-w-0 flex-1 justify-center px-2 aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                  >
+                    {side}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             </fieldset>
           </div>
         </section>

@@ -37,7 +37,7 @@ function Loader() {
   );
 }
 
-export default function App() {
+export default function App({ orbitControlsRef }) {
   const [gridData, setGridData] = useState([]);
 
   const xTile = 3.0;
@@ -63,6 +63,8 @@ export default function App() {
   const { balconyAccessoriesBool } = useContext(SliderContext);
 
   const { rotateSpeed } = useContext(SliderContext);
+  const { lightAzimuth, lightHeight, lightIntensity } =
+    useContext(SliderContext);
 
   const buildingHeight = sliderValueY * yTile;
   const footprintRadius = Math.hypot(
@@ -363,7 +365,7 @@ export default function App() {
     <Canvas
       shadows="soft"
       camera={{
-        position: [59.65926550172887, 27.97469288957793, 44.075194097748856],
+        position: [-56.703, 28.98, -49.734],
         fov: 30,
       }}
     >
@@ -372,11 +374,11 @@ export default function App() {
         <ambientLight intensity={0.4} />
         <directionalLight
           position={[
-            Math.sin(MathUtils.degToRad(114)) * lightDistance,
-            1.3 * lightDistance,
-            Math.cos(MathUtils.degToRad(114)) * lightDistance,
+            Math.sin(MathUtils.degToRad(lightAzimuth)) * lightDistance,
+            lightHeight * lightDistance,
+            Math.cos(MathUtils.degToRad(lightAzimuth)) * lightDistance,
           ]}
-          intensity={2}
+          intensity={lightIntensity}
           castShadow
           shadow-mapSize={[4096, 4096]}
           shadow-bias={-0.0001}
@@ -444,9 +446,10 @@ export default function App() {
         </mesh>
 
         <OrbitControls
+          ref={orbitControlsRef}
           autoRotate
           autoRotateSpeed={rotateSpeed}
-          target={[2.071960069931832, 7.753846057383639, -1.9649509145582764]}
+          target={[-0.345, 7.7528, 3.557]}
           makeDefault
         />
       </Suspense>
