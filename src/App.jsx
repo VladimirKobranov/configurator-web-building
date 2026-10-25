@@ -4,10 +4,9 @@ import {
   Environment,
   Html,
   OrbitControls,
-  SoftShadows,
   useProgress,
 } from "@react-three/drei";
-import { SliderContext } from "./ChakraInit";
+import { SliderContext } from "./configurator-context";
 import { Model } from "./Model";
 import { MathUtils } from "three";
 import {
@@ -17,27 +16,30 @@ import {
   SMAA,
   SSAO,
 } from "@react-three/postprocessing";
-import {
-  CircularProgress,
-  CircularProgressLabel,
-  Text,
-} from "@chakra-ui/react";
-
 import seedRandom from "seedrandom";
 
 function Loader() {
   const { progress } = useProgress();
   return (
     <Html center>
-      <CircularProgress
-        value={Math.floor(progress)}
-        color="tomato"
-        size="70px"
-        thickness="8px"
-      >
-        <CircularProgressLabel>{Math.floor(progress)}%</CircularProgressLabel>
-      </CircularProgress>
-      <Text>Loading...</Text>
+      <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background/90 p-4 shadow-lg">
+        <div
+          className="grid size-16 place-items-center rounded-full"
+          style={{
+            background: `conic-gradient(var(--primary) ${progress}%, var(--muted) ${progress}%)`,
+          }}
+          role="progressbar"
+          aria-label="Loading building model"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.floor(progress)}
+        >
+          <div className="grid size-12 place-items-center rounded-full bg-background text-xs font-semibold tabular-nums">
+            {Math.floor(progress)}%
+          </div>
+        </div>
+        <span className="text-xs text-muted-foreground">Loading…</span>
+      </div>
     </Html>
   );
 }
@@ -357,12 +359,11 @@ export default function App() {
 
   return (
     <Canvas
-      shadows={"basic"}
+      shadows={"percentage"}
       camera={{ position: [-50, 20, -40], fov: 30 }}
       gl={{ antialias: false }}
     >
       <Suspense fallback={<Loader />}>
-        <SoftShadows samples={8} focus={2} size={2} />
         <color attach="background" args={["#e0e0e0"]} />
         <ambientLight intensity={0.3} color={"white"} />
         <directionalLight

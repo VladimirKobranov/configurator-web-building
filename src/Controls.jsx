@@ -1,408 +1,401 @@
-import { useContext } from "react";
-import {
-  Box,
-  Checkbox,
-  Divider,
-  Heading,
-  Input,
-  Radio,
-  RadioGroup,
-  SimpleGrid,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { SliderContext } from "./ChakraInit";
-import Footer from "./Footer";
+import { useContext, useId, useState } from "react";
+import { Settings2 } from "lucide-react";
+import { SliderContext } from "./configurator-context";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 
-function Controls() {
-  /* eslint-disable no-unused-vars */
-  const { sliderValueX, setSliderValueX } = useContext(SliderContext);
-  const { sliderValueY, setSliderValueY } = useContext(SliderContext);
-  const { sliderValueZ, setSliderValueZ } = useContext(SliderContext);
-  const { seed, setSeed } = useContext(SliderContext);
+function RangeControl({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  onChange,
+  format = (currentValue) => currentValue,
+}) {
+  const id = useId();
 
-  const { rotateSpeed, setRotateSpeed } = useContext(SliderContext);
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between gap-3">
+        <Label id={`${id}-label`} className="text-sm font-medium">
+          {label}
+        </Label>
+        <output
+          htmlFor={id}
+          className="min-w-10 rounded-md bg-muted px-2 py-0.5 text-right text-xs font-semibold tabular-nums text-foreground"
+        >
+          {format(value)}
+        </output>
+      </div>
+      <Slider
+        id={id}
+        aria-label={label}
+        aria-labelledby={`${id}-label`}
+        value={[value]}
+        min={min}
+        max={max}
+        step={step}
+        onValueChange={(values) =>
+          onChange(Array.isArray(values) ? values[0] : values)
+        }
+      />
+    </div>
+  );
+}
 
-  const { doorSide, setDoorSide } = useContext(SliderContext);
-  const { doorPosition, setDoorPosition } = useContext(SliderContext);
+function ToggleField({ id, label, checked, onCheckedChange }) {
+  return (
+    <label
+      htmlFor={id}
+      className="flex min-h-8 cursor-pointer items-center gap-2 rounded-md px-1 text-xs hover:bg-muted/60"
+    >
+      <Checkbox
+        id={id}
+        aria-label={label}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      />
+      <span>{label}</span>
+    </label>
+  );
+}
 
-  const { balconyPosition, setBalconyPosition } = useContext(SliderContext);
-  const { balconySide, setBalconySide } = useContext(SliderContext);
+function Controls({ open, onToggle }) {
+  const {
+    sliderValueX,
+    setSliderValueX,
+    sliderValueY,
+    setSliderValueY,
+    sliderValueZ,
+    setSliderValueZ,
+    seed,
+    setSeed,
+    rotateSpeed,
+    setRotateSpeed,
+    doorSide,
+    setDoorSide,
+    doorPosition,
+    setDoorPosition,
+    balconyPosition,
+    setBalconyPosition,
+    balconySide,
+    setBalconySide,
+    pipeBool,
+    setPipeBool,
+    airCondBool,
+    setAirCondBool,
+    airCondPercentage,
+    setAirCondPercentage,
+    roofAccessoriesPercentage,
+    setRoofAccessoriesPercentage,
+    roofAccessoriesBool,
+    setRoofAccessoriesBool,
+    balconyAccessoriesPercentage,
+    setBalconyAccessoriesPercentage,
+    balconyAccessoriesBool,
+    setBalconyAccessoriesBool,
+  } = useContext(SliderContext);
 
-  const { pipeBool, setPipeBool } = useContext(SliderContext);
-  const { airCondBool, setAirCondBool } = useContext(SliderContext);
-  const { airCondPercentage, setAirCondPercentage } = useContext(SliderContext);
-  const { roofAccessoriesPercentage, setRoofAccessoriesPercentage } =
-    useContext(SliderContext);
-  const { roofAccessoriesBool, setRoofAccessoriesBool } =
-    useContext(SliderContext);
-  const { balconyAccessoriesPercentage, setBalconyAccessoriesPercentage } =
-    useContext(SliderContext);
-  const { balconyAccessoriesBool, setBalconyAccessoriesBool } =
-    useContext(SliderContext);
+  const [balconyInput, setBalconyInput] = useState(balconyPosition.join(", "));
+  const sideLength =
+    doorSide === "Front" || doorSide === "Back" ? sliderValueZ : sliderValueX;
+  const maxDoorPosition = Math.max(1, sideLength - 2);
+  const canPlaceDoor = sideLength > 2;
 
-  /* eslint-enable no-unused-vars */
-
-  function onSliderChangeX(val) {
-    setSliderValueX(val);
+  function updateDimension(side, value) {
+    if (side === "x") {
+      setSliderValueX(value);
+      if (doorSide === "Left" || doorSide === "Right") {
+        setDoorPosition((position) =>
+          Math.min(position, Math.max(1, value - 2)),
+        );
+      }
+    } else if (side === "y") {
+      setSliderValueY(value);
+    } else {
+      setSliderValueZ(value);
+      if (doorSide === "Front" || doorSide === "Back") {
+        setDoorPosition((position) =>
+          Math.min(position, Math.max(1, value - 2)),
+        );
+      }
+    }
   }
 
-  function onSliderChangeY(val) {
-    setSliderValueY(val);
+  function updateDoorSide(side) {
+    setDoorSide(side);
+    const length =
+      side === "Front" || side === "Back" ? sliderValueZ : sliderValueX;
+    setDoorPosition((position) => Math.min(position, Math.max(1, length - 2)));
   }
 
-  function onSliderChangeZ(val) {
-    setSliderValueZ(val);
+  function updateBalconySides(side, checked) {
+    setBalconySide((current) =>
+      checked
+        ? current.includes(side)
+          ? current
+          : [...current, side]
+        : current.filter((item) => item !== side),
+    );
   }
 
-  function onSliderChangeSeed(val) {
-    setSeed(val);
-  }
-
-  function onSliderChangeDoorPosition(val) {
-    setDoorPosition(val);
-  }
-
-  function onSliderChangeSpeed(val) {
-    setRotateSpeed(val);
-  }
-
-  function onInputChangeBalconyPositions(val) {
-    const parsedArray = val
+  function commitBalconyPositions(value) {
+    const parsed = value
       .split(",")
-      .map((str) => parseInt(str.trim(), 10))
-      .filter((num) => !isNaN(num));
-    if (parsedArray.length === 0) {
+      .map((part) => Number.parseInt(part.trim(), 10))
+      .filter(Number.isFinite);
+    if (parsed.length === 0) {
       setBalconyPosition([1, 3]);
+      setBalconyInput("1, 3");
     } else {
-      setBalconyPosition(parsedArray);
+      setBalconyPosition(parsed);
+      setBalconyInput(parsed.join(", "));
     }
-  }
-
-  function onCheckboxChangeBalconySide(checkboxValue, isChecked) {
-    if (isChecked) {
-      setBalconySide((prevBalconySides) => [
-        ...prevBalconySides,
-        checkboxValue,
-      ]);
-    } else {
-      setBalconySide((prevBalconySides) =>
-        prevBalconySides.filter((side) => side !== checkboxValue),
-      );
-    }
-  }
-
-  function onCheckboxChangePipes(isChecked) {
-    if (isChecked) {
-      setPipeBool(true);
-    } else {
-      setPipeBool(false);
-    }
-  }
-
-  function onCheckboxChangeAirCond(isChecked) {
-    if (isChecked) {
-      setAirCondBool(true);
-    } else {
-      setAirCondBool(false);
-    }
-  }
-
-  function onSliderChangeAirCondPercentage(val) {
-    setAirCondPercentage(val);
-  }
-
-  function onCheckboxChangeRoofAccessories(isChecked) {
-    if (isChecked) {
-      setRoofAccessoriesBool(true);
-    } else {
-      setRoofAccessoriesBool(false);
-    }
-  }
-
-  function onSliderChangeRoofAccessoriesPercentage(val) {
-    setRoofAccessoriesPercentage(val);
-  }
-
-  function onCheckboxChangeBalconyAccessories(isChecked) {
-    if (isChecked) {
-      setBalconyAccessoriesBool(true);
-    } else {
-      setBalconyAccessoriesBool(false);
-    }
-  }
-
-  function onSliderChangeBalconyAccessoriesPercentage(val) {
-    setBalconyAccessoriesPercentage(val);
   }
 
   return (
-    <Box
-      position="absolute"
-      top="0"
-      right="0"
-      width="400px"
-      minW="400px"
-      height="100%"
-      overflowY="auto"
-      display="flex"
-      justifyContent="center"
-      alignItems="flex-start"
+    <aside
+      aria-label="Configurator settings"
+      className={`absolute right-4 top-4 z-10 flex w-[min(25rem,calc(100%_-_2rem))] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-md ${open ? "h-[calc(100dvh_-_2rem)]" : ""}`}
     >
-      <VStack w="90%" spacing={4} pb="20px" pt="20px">
-        <Heading as="h3" size="lg" mb="10px">
-          Configurator
-        </Heading>
-
-        <Box w="full" mb="10px">
-          <Text align="center">Depth number: {sliderValueX}</Text>
-          <Slider
-            defaultValue={sliderValueX}
-            min={0}
-            max={12}
-            step={1}
-            onChangeEnd={(val) => onSliderChangeX(val)}
-          >
-            <SliderTrack bg="red.100">
-              <Box position="relative" right={10} />
-              <SliderFilledTrack bg="tomato" />
-            </SliderTrack>
-            <SliderThumb boxSize={6} />
-          </Slider>
-
-          <Text align="center">Height number: {sliderValueY}</Text>
-          <Slider
-            defaultValue={sliderValueY}
-            min={0}
-            max={12}
-            step={1}
-            onChangeEnd={(val) => onSliderChangeY(val)}
-          >
-            <SliderTrack bg="red.100">
-              <Box position="relative" right={10} />
-              <SliderFilledTrack bg="tomato" />
-            </SliderTrack>
-            <SliderThumb boxSize={6} />
-          </Slider>
-
-          <Text align="center">Width number: {sliderValueZ}</Text>
-          <Slider
-            defaultValue={sliderValueZ}
-            min={0}
-            max={12}
-            step={1}
-            onChangeEnd={(val) => onSliderChangeZ(val)}
-          >
-            <SliderTrack bg="red.100">
-              <Box position="relative" right={10} />
-              <SliderFilledTrack bg="tomato" />
-            </SliderTrack>
-            <SliderThumb boxSize={6} />
-          </Slider>
-        </Box>
-
-        <Text fontSize="18px" fontWeight="600">
-          Entrance door side:
-        </Text>
-        <RadioGroup onChange={setDoorSide} value={doorSide}>
-          <Stack direction="row" spacing="20px">
-            <Radio value="Front">Front</Radio>
-            <Radio value="Back">Back</Radio>
-            <Radio value="Left">Left</Radio>
-            <Radio value="Right">Right</Radio>
-          </Stack>
-        </RadioGroup>
-
-        <Text fontSize="18px" fontWeight="600">
-          Door position: {doorPosition}
-        </Text>
-        <Slider
-          defaultValue={doorPosition}
-          min={1}
-          max={
-            doorSide === "Front" || doorSide === "Back"
-              ? sliderValueZ - 2
-              : sliderValueX - 2
-          }
-          step={1}
-          onChangeEnd={(val) => onSliderChangeDoorPosition(val)}
+      <header className={open ? "border-b border-border" : ""}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-auto w-full justify-start gap-3 rounded-none px-5 py-4 text-left hover:bg-muted/50"
+          aria-controls="configurator-settings-content"
+          aria-expanded={open}
+          onClick={onToggle}
         >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <Settings2 className="size-4" aria-hidden="true" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-base font-semibold tracking-tight text-foreground">
+              Configurator
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              Shape your building
+            </span>
+          </span>
+        </Button>
+      </header>
 
-        <Text fontSize="18px" fontWeight="600">
-          Balcony positions:
-        </Text>
-        <Input
-          placeholder={`enter numbers with comma: ${balconyPosition.join(
-            ", ",
-          )}`}
-          onBlur={(event) => onInputChangeBalconyPositions(event.target.value)}
-        />
+      <div
+        id="configurator-settings-content"
+        hidden={!open}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-1 md:px-5"
+      >
+        <section className="space-y-3 border-b border-border py-4 last:border-b-0">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Building size
+          </h2>
+          <div className="space-y-3">
+            <RangeControl
+              label="Depth"
+              value={sliderValueX}
+              min={0}
+              max={12}
+              onChange={(value) => updateDimension("x", value)}
+            />
+            <RangeControl
+              label="Height"
+              value={sliderValueY}
+              min={0}
+              max={12}
+              onChange={(value) => updateDimension("y", value)}
+            />
+            <RangeControl
+              label="Width"
+              value={sliderValueZ}
+              min={0}
+              max={12}
+              onChange={(value) => updateDimension("z", value)}
+            />
+          </div>
+        </section>
 
-        <Text fontSize="18px" fontWeight="600">
-          Balcony sides:
-        </Text>
-        <Stack direction="row">
-          <Checkbox
-            defaultChecked
-            onChange={(event) =>
-              onCheckboxChangeBalconySide("Front", event.target.checked)
-            }
-          >
-            Front
-          </Checkbox>
-          <Checkbox
-            defaultChecked
-            onChange={(event) =>
-              onCheckboxChangeBalconySide("Back", event.target.checked)
-            }
-          >
-            Back
-          </Checkbox>
-          <Checkbox
-            onChange={(event) =>
-              onCheckboxChangeBalconySide("Left", event.target.checked)
-            }
-          >
-            Left
-          </Checkbox>
-          <Checkbox
-            onChange={(event) =>
-              onCheckboxChangeBalconySide("Right", event.target.checked)
-            }
-          >
-            Right
-          </Checkbox>
-        </Stack>
+        <section className="space-y-3 border-b border-border py-4 last:border-b-0">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Entrance
+          </h2>
+          <div className="space-y-3">
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">Door side</legend>
+              <RadioGroup
+                aria-label="Door side"
+                value={doorSide}
+                onValueChange={updateDoorSide}
+                className="grid grid-cols-2 gap-1 sm:grid-cols-4"
+              >
+                {["Front", "Back", "Left", "Right"].map((side) => {
+                  const id = `door-side-${side.toLowerCase()}`;
+                  return (
+                    <label
+                      key={side}
+                      htmlFor={id}
+                      className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-xs hover:bg-muted/60"
+                    >
+                      <RadioGroupItem id={id} value={side} aria-label={side} />
+                      <span>{side}</span>
+                    </label>
+                  );
+                })}
+              </RadioGroup>
+            </fieldset>
+            <RangeControl
+              label="Door position"
+              value={Math.min(doorPosition, maxDoorPosition)}
+              min={1}
+              max={maxDoorPosition}
+              onChange={setDoorPosition}
+            />
+            {!canPlaceDoor && (
+              <p className="text-xs text-muted-foreground" role="status">
+                This side needs at least 3 units for an entrance position.
+              </p>
+            )}
+          </div>
+        </section>
 
-        <Text fontSize="18px" fontWeight="600">
-          Accessories:
-        </Text>
-        <SimpleGrid columns={2} spacing={2}>
-          <Checkbox
-            defaultChecked
-            onChange={(event) => onCheckboxChangePipes(event.target.checked)}
-          >
-            Flood pipes
-          </Checkbox>
-          <Checkbox
-            defaultChecked
-            onChange={(event) => onCheckboxChangeAirCond(event.target.checked)}
-          >
-            Air conditioners
-          </Checkbox>
-          <Checkbox
-            defaultChecked
-            onChange={(event) =>
-              onCheckboxChangeRoofAccessories(event.target.checked)
-            }
-          >
-            Roof stuff
-          </Checkbox>
-          <Checkbox
-            defaultChecked
-            onChange={(event) =>
-              onCheckboxChangeBalconyAccessories(event.target.checked)
-            }
-          >
-            Balcony gardens
-          </Checkbox>
-        </SimpleGrid>
-        <Text fontSize="18px" fontWeight="600">
-          Percentages:
-        </Text>
-        <Text>Air conditioners: {airCondPercentage}</Text>
-        <Slider
-          defaultValue={airCondPercentage}
-          min={0}
-          max={100}
-          step={1}
-          onChangeEnd={(val) => onSliderChangeAirCondPercentage(val)}
-        >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
-        <Text>Roof accessories: {roofAccessoriesPercentage}</Text>
-        <Slider
-          defaultValue={roofAccessoriesPercentage}
-          min={0}
-          max={100}
-          step={1}
-          onChangeEnd={(val) => onSliderChangeRoofAccessoriesPercentage(val)}
-        >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
-        <Text>Balcony accessories: {balconyAccessoriesPercentage}</Text>
-        <Slider
-          defaultValue={balconyAccessoriesPercentage}
-          min={0}
-          max={100}
-          step={1}
-          onChangeEnd={(val) => onSliderChangeBalconyAccessoriesPercentage(val)}
-        >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
+        <section className="space-y-3 border-b border-border py-4 last:border-b-0">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Balconies
+          </h2>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="balcony-positions">Positions</Label>
+              <Input
+                id="balcony-positions"
+                inputMode="numeric"
+                value={balconyInput}
+                onChange={(event) => setBalconyInput(event.target.value)}
+                onBlur={(event) => commitBalconyPositions(event.target.value)}
+                aria-describedby="balcony-positions-help"
+                placeholder="1, 3, 4, 6"
+                className="h-9"
+              />
+              <p
+                id="balcony-positions-help"
+                className="text-xs text-muted-foreground"
+              >
+                Separate positions with commas.
+              </p>
+            </div>
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">Facade sides</legend>
+              <div className="grid grid-cols-2 gap-1">
+                {["Front", "Back", "Left", "Right"].map((side) => {
+                  const id = `balcony-side-${side.toLowerCase()}`;
+                  return (
+                    <ToggleField
+                      key={side}
+                      id={id}
+                      label={side}
+                      checked={balconySide.includes(side)}
+                      onCheckedChange={(checked) =>
+                        updateBalconySides(side, checked)
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </fieldset>
+          </div>
+        </section>
 
-        {/*aditional settings */}
-        <Divider mb="20px" mt="20px" />
+        <section className="space-y-3 border-b border-border py-4 last:border-b-0">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Accessories
+          </h2>
+          <div className="space-y-2">
+            <ToggleField
+              id="accessory-pipes"
+              label="Flood pipes"
+              checked={pipeBool}
+              onCheckedChange={setPipeBool}
+            />
+            <div className="space-y-1.5">
+              <ToggleField
+                id="accessory-air-conditioners"
+                label="Air conditioners"
+                checked={airCondBool}
+                onCheckedChange={setAirCondBool}
+              />
+              <RangeControl
+                label="Probability"
+                value={airCondPercentage}
+                min={0}
+                max={100}
+                format={(value) => `${value}%`}
+                onChange={setAirCondPercentage}
+              />
+            </div>
+            <div className="space-y-2">
+              <ToggleField
+                id="accessory-roof"
+                label="Roof accessories"
+                checked={roofAccessoriesBool}
+                onCheckedChange={setRoofAccessoriesBool}
+              />
+              <RangeControl
+                label="Probability"
+                value={roofAccessoriesPercentage}
+                min={0}
+                max={100}
+                format={(value) => `${value}%`}
+                onChange={setRoofAccessoriesPercentage}
+              />
+            </div>
+            <div className="space-y-2">
+              <ToggleField
+                id="accessory-balcony"
+                label="Balcony gardens"
+                checked={balconyAccessoriesBool}
+                onCheckedChange={setBalconyAccessoriesBool}
+              />
+              <RangeControl
+                label="Probability"
+                value={balconyAccessoriesPercentage}
+                min={0}
+                max={100}
+                format={(value) => `${value}%`}
+                onChange={setBalconyAccessoriesPercentage}
+              />
+            </div>
+          </div>
+        </section>
 
-        <Heading as="h4" size="md">
-          Additional settings:
-        </Heading>
-
-        <Text>Seed: {seed}</Text>
-        <Slider
-          defaultValue={seed}
-          min={0}
-          max={100}
-          step={1}
-          onChangeEnd={(val) => onSliderChangeSeed(val)}
-        >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
-
-        <Text>Camera rotation speed: {rotateSpeed}</Text>
-        <Slider
-          defaultValue={rotateSpeed}
-          min={0}
-          max={5}
-          step={0.1}
-          onChangeEnd={(val) => onSliderChangeSpeed(val)}
-        >
-          <SliderTrack bg="red.100">
-            <Box position="relative" right={10} />
-            <SliderFilledTrack bg="tomato" />
-          </SliderTrack>
-          <SliderThumb boxSize={6} />
-        </Slider>
-      </VStack>
-      <Footer />
-    </Box>
+        <section className="space-y-3 border-b border-border py-4 last:border-b-0">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Generation
+          </h2>
+          <div className="space-y-3">
+            <RangeControl
+              label="Seed"
+              value={seed}
+              min={0}
+              max={100}
+              onChange={setSeed}
+            />
+            <RangeControl
+              label="Camera rotation"
+              value={rotateSpeed}
+              min={0}
+              max={5}
+              step={0.1}
+              onChange={setRotateSpeed}
+              format={(value) => Number(value).toFixed(1)}
+            />
+          </div>
+        </section>
+      </div>
+    </aside>
   );
 }
 

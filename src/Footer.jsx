@@ -1,18 +1,15 @@
-import { Link, Text } from "@chakra-ui/react";
-import style from "./Footer.module.css";
-
-const d = new Date();
-let year = d.getFullYear();
-
-const link = () => (
-  <Link href="https://github.com/VladimirKobranov">copyright VK</Link>
-);
-
 function Footer() {
   return (
-    <Text className={style.footer} w="auto">
-      {link()}&nbsp;|&nbsp;{year}
-    </Text>
+    <footer className="fixed bottom-3 left-1/2 z-20 -translate-x-1/2 text-xs text-muted-foreground/70">
+      <a
+        className="underline-offset-4 hover:text-muted-foreground hover:underline"
+        href="https://github.com/VladimirKobranov"
+        target="_blank"
+        rel="noreferrer"
+      >
+        VK {new Date().getFullYear()}
+      </a>
+    </footer>
   );
 }
 

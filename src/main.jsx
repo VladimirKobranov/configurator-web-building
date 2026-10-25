@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import ChakraInit from "./ChakraInit";
+import Configurator from "./Configurator";
 import "./styles.css";
 
-createRoot(document.getElementById("root")).render(<ChakraInit />);
+createRoot(document.getElementById("root")).render(<Configurator />);
