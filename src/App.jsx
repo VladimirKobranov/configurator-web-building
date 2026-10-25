@@ -55,12 +55,9 @@ export default function App({ orbitControlsRef }) {
   const { balconySide } = useContext(SliderContext);
 
   const { pipeBool } = useContext(SliderContext);
-  const { airCondBool } = useContext(SliderContext);
   const { airCondPercentage } = useContext(SliderContext);
   const { roofAccessoriesPercentage } = useContext(SliderContext);
-  const { roofAccessoriesBool } = useContext(SliderContext);
   const { balconyAccessoriesPercentage } = useContext(SliderContext);
-  const { balconyAccessoriesBool } = useContext(SliderContext);
 
   const { rotateSpeed } = useContext(SliderContext);
   const { lightAzimuth, lightHeight, lightIntensity } =
@@ -141,9 +138,8 @@ export default function App({ orbitControlsRef }) {
                   ) {
                     mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                     if (
-                      balconyAccessoriesBool &&
                       randomFor("balcony-accessory-chance") * 100 <
-                        balconyAccessoriesPercentage
+                      balconyAccessoriesPercentage
                     ) {
                       balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
                         randomFor("balcony-accessory-variant") * 5,
@@ -152,7 +148,6 @@ export default function App({ orbitControlsRef }) {
                   } else {
                     mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                     if (
-                      airCondBool &&
                       y !== 0 &&
                       randomFor("air-conditioner-chance") * 100 <
                         airCondPercentage
@@ -197,9 +192,8 @@ export default function App({ orbitControlsRef }) {
                   ) {
                     mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                     if (
-                      balconyAccessoriesBool &&
                       randomFor("balcony-accessory-chance") * 100 <
-                        balconyAccessoriesPercentage
+                      balconyAccessoriesPercentage
                     ) {
                       balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
                         randomFor("balcony-accessory-variant") * 5,
@@ -208,7 +202,6 @@ export default function App({ orbitControlsRef }) {
                   } else {
                     mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                     if (
-                      airCondBool &&
                       y !== 0 &&
                       randomFor("air-conditioner-chance") * 100 <
                         airCondPercentage
@@ -233,9 +226,8 @@ export default function App({ orbitControlsRef }) {
               ) {
                 mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                 if (
-                  balconyAccessoriesBool &&
                   randomFor("balcony-accessory-chance") * 100 <
-                    balconyAccessoriesPercentage
+                  balconyAccessoriesPercentage
                 ) {
                   balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
                     randomFor("balcony-accessory-variant") * 5,
@@ -244,7 +236,6 @@ export default function App({ orbitControlsRef }) {
               } else {
                 mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                 if (
-                  airCondBool &&
                   y !== 0 &&
                   randomFor("air-conditioner-chance") * 100 < airCondPercentage
                 ) {
@@ -266,9 +257,8 @@ export default function App({ orbitControlsRef }) {
               ) {
                 mesh = `Window_balcony_${Math.floor(randomFor("balcony-window") * 7)}`;
                 if (
-                  balconyAccessoriesBool &&
                   randomFor("balcony-accessory-chance") * 100 <
-                    balconyAccessoriesPercentage
+                  balconyAccessoriesPercentage
                 ) {
                   balconyAccessoriesMesh = `BalconyAccessories_${Math.floor(
                     randomFor("balcony-accessory-variant") * 5,
@@ -277,7 +267,6 @@ export default function App({ orbitControlsRef }) {
               } else {
                 mesh = `Window_${Math.floor(randomFor("window") * 3)}`;
                 if (
-                  airCondBool &&
                   y !== 0 &&
                   randomFor("air-conditioner-chance") * 100 < airCondPercentage
                 ) {
@@ -290,9 +279,8 @@ export default function App({ orbitControlsRef }) {
             if (y === sliderValueY) {
               mesh = "Ceiling_cap";
               if (
-                roofAccessoriesBool &&
                 randomFor("roof-accessory-chance") * 100 <
-                  roofAccessoriesPercentage
+                roofAccessoriesPercentage
               ) {
                 roofAccessoriesMesh = `RoofAccessories_${Math.floor(
                   randomFor("roof-accessory-variant") * 4,
@@ -329,13 +317,10 @@ export default function App({ orbitControlsRef }) {
     balconyPosition,
     balconySide,
     pipeBool,
-    airCondBool,
     airCondPercentage,
     seed,
     roofAccessoriesPercentage,
-    roofAccessoriesBool,
     balconyAccessoriesPercentage,
-    balconyAccessoriesBool,
     xTile,
     yTile,
     zTile,
@@ -352,12 +337,9 @@ export default function App({ orbitControlsRef }) {
     balconyPosition,
     balconySide,
     pipeBool,
-    airCondBool,
     airCondPercentage,
     roofAccessoriesPercentage,
-    roofAccessoriesBool,
     balconyAccessoriesPercentage,
-    balconyAccessoriesBool,
     generateGrid,
   ]);
 

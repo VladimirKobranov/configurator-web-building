@@ -87,18 +87,12 @@ function Controls({ open, onToggle }) {
     setBalconySide,
     pipeBool,
     setPipeBool,
-    airCondBool,
-    setAirCondBool,
     airCondPercentage,
     setAirCondPercentage,
     roofAccessoriesPercentage,
     setRoofAccessoriesPercentage,
-    roofAccessoriesBool,
-    setRoofAccessoriesBool,
     balconyAccessoriesPercentage,
     setBalconyAccessoriesPercentage,
-    balconyAccessoriesBool,
-    setBalconyAccessoriesBool,
   } = useContext(SliderContext);
 
   const maxBalconyPosition = Math.max(
@@ -156,7 +150,7 @@ function Controls({ open, onToggle }) {
   return (
     <aside
       aria-label="Configurator settings"
-      className={`absolute right-4 top-4 z-10 flex w-[min(25rem,calc(100%_-_2rem))] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-md ${open ? "h-[calc(100dvh_-_2rem)]" : ""}`}
+      className={`absolute right-4 top-4 z-10 flex w-[min(25rem,calc(100%_-_2rem))] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-md ${open ? "max-h-[calc(100dvh_-_2rem)]" : ""}`}
     >
       <header className={open ? "border-b border-border" : ""}>
         <Button
@@ -184,7 +178,7 @@ function Controls({ open, onToggle }) {
       <div
         id="configurator-settings-content"
         hidden={!open}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-1 md:px-5"
+        className="min-h-0 overflow-y-auto overscroll-contain px-4 py-1 md:px-5"
       >
         <section className="space-y-3 border-b border-border py-4 last:border-b-0">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -199,18 +193,18 @@ function Controls({ open, onToggle }) {
               onChange={(value) => updateDimension("x", value)}
             />
             <RangeControl
-              label="Height"
-              value={sliderValueY}
-              min={0}
-              max={12}
-              onChange={(value) => updateDimension("y", value)}
-            />
-            <RangeControl
               label="Width"
               value={sliderValueZ}
               min={0}
               max={12}
               onChange={(value) => updateDimension("z", value)}
+            />
+            <RangeControl
+              label="Height"
+              value={sliderValueY}
+              min={0}
+              max={12}
+              onChange={(value) => updateDimension("y", value)}
             />
           </div>
         </section>
@@ -330,15 +324,9 @@ function Controls({ open, onToggle }) {
               checked={pipeBool}
               onCheckedChange={setPipeBool}
             />
-            <div className="space-y-1.5">
-              <ToggleField
-                id="accessory-air-conditioners"
-                label="Air conditioners"
-                checked={airCondBool}
-                onCheckedChange={setAirCondBool}
-              />
+            <div>
               <RangeControl
-                label="Probability"
+                label="Air conditioners"
                 value={airCondPercentage}
                 min={0}
                 max={100}
@@ -346,15 +334,9 @@ function Controls({ open, onToggle }) {
                 onChange={setAirCondPercentage}
               />
             </div>
-            <div className="space-y-2">
-              <ToggleField
-                id="accessory-roof"
-                label="Roof accessories"
-                checked={roofAccessoriesBool}
-                onCheckedChange={setRoofAccessoriesBool}
-              />
+            <div>
               <RangeControl
-                label="Probability"
+                label="Roof accessories"
                 value={roofAccessoriesPercentage}
                 min={0}
                 max={100}
@@ -362,15 +344,9 @@ function Controls({ open, onToggle }) {
                 onChange={setRoofAccessoriesPercentage}
               />
             </div>
-            <div className="space-y-2">
-              <ToggleField
-                id="accessory-balcony"
-                label="Balcony gardens"
-                checked={balconyAccessoriesBool}
-                onCheckedChange={setBalconyAccessoriesBool}
-              />
+            <div>
               <RangeControl
-                label="Probability"
+                label="Balcony gardens"
                 value={balconyAccessoriesPercentage}
                 min={0}
                 max={100}

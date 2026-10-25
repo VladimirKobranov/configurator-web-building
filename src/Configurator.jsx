@@ -17,14 +17,11 @@ export default function Configurator() {
   const [balconyPosition, setBalconyPosition] = useState([1, 3, 4, 6]);
   const [balconySide, setBalconySide] = useState(["Front", "Back"]);
   const [pipeBool, setPipeBool] = useState(true);
-  const [airCondBool, setAirCondBool] = useState(true);
   const [airCondPercentage, setAirCondPercentage] = useState(25);
-  const [roofAccessoriesBool, setRoofAccessoriesBool] = useState(true);
   const [roofAccessoriesPercentage, setRoofAccessoriesPercentage] =
     useState(10);
   const [balconyAccessoriesPercentage, setBalconyAccessoriesPercentage] =
     useState(20);
-  const [balconyAccessoriesBool, setBalconyAccessoriesBool] = useState(true);
   const [rotateSpeed, setRotateSpeed] = useState(0.2);
   const [controlsOpen, setControlsOpen] = useState(true);
   const [lightAzimuth, setLightAzimuth] = useState(293);
@@ -53,18 +50,12 @@ export default function Configurator() {
     setBalconySide,
     pipeBool,
     setPipeBool,
-    airCondBool,
-    setAirCondBool,
     airCondPercentage,
     setAirCondPercentage,
-    roofAccessoriesBool,
-    setRoofAccessoriesBool,
     roofAccessoriesPercentage,
     setRoofAccessoriesPercentage,
     balconyAccessoriesPercentage,
     setBalconyAccessoriesPercentage,
-    balconyAccessoriesBool,
-    setBalconyAccessoriesBool,
     lightAzimuth,
     setLightAzimuth,
     lightHeight,
