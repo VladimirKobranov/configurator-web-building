@@ -1,32 +1,48 @@
-# Web Building Configurator
+# Panelka Building Configurator
 
-`PANELKA`
+**Version 2.0.0**
 
-#### The app link: [Configurator](http://building-configurator.web.app)
+Configure a panel apartment building and explore the result in an interactive 3D preview.
 
-<sub>version 0.9</sub>
+![Panelka Building Configurator](pics/pic.png)
 
-## Info
+## Features
 
-Web building configurator made with `React`,`Threejs`,`Fiber`,`Drei`.
+- Set the building's depth, width, and height.
+- Choose the entrance side and position.
+- Select balcony positions and facade sides.
+- Control the probability of air conditioners, roof accessories, and balcony gardens.
+- Use a seed to reproduce the same generated building.
+- Rotate the camera and switch between system, light, and dark themes.
 
-**List of possibilities:**
+## Tech stack
 
-- Length, width, height
-- Entrance door position and location
-- Balcony sides and locations
-- Accessories with random percentage
-- Global seed
-- Camera rotation value
+- React 18 and TypeScript
+- Vite 8
+- Three.js, React Three Fiber, and Drei
+- Zustand
+- Tailwind CSS 4, Base UI, and shadcn/ui
 
----
+## Getting started
 
-![pic_1](pics/pic_1.png)
+Use Node.js 20.19+ or 22.12+.
 
-<p align="center">
-<sub >pic 1</sub>
-</p>
+```sh
+npm install
+npm run dev
+```
 
-### References
+Open the local URL printed by Vite. To show temporary scene development controls, add `?dev=true` to the URL.
 
-- Art style and idea: [Nastya Zhenunk](https://www.artstation.com/artwork/m8ZPZv)
+## Project checks
+
+```sh
+npm run check  # formatting, TypeScript, and lint
+npm run build  # production build
+npm run preview
+```
+
+
+## Credits
+
+- Art style and inspiration: [Nastya Zhenunk](https://www.artstation.com/artwork/m8ZPZv)

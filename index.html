@@ -5,11 +5,32 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
       content="Building configurator for the 3D model of a building."
     />
     <meta name="author" content="Vladimir Kobranov" />
+    <script>
+      try {
+        const theme = JSON.parse(
+          localStorage.getItem("building-configurator-theme") || "null",
+        )?.state?.theme;
+        const dark =
+          theme === "dark" ||
+          (theme !== "light" &&
+            matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.classList.toggle("light", !dark);
+        document.documentElement.style.colorScheme = dark ? "dark" : "light";
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", dark ? "#171717" : "#ffffff");
+        document
+          .querySelector('meta[name="color-scheme"]')
+          ?.setAttribute("content", dark ? "dark" : "light");
+      } catch {}
+    </script>
 
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
@@ -19,6 +40,6 @@
 
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
