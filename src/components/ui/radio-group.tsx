@@ -1,8 +1,14 @@
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
+import type { ComponentProps } from "react";
 import { cn } from "cn";
 
-function RadioGroup({ className = "", value, onValueChange, ...props }) {
+function RadioGroup({
+  className = "",
+  value,
+  onValueChange,
+  ...props
+}: ComponentProps<typeof RadioGroupPrimitive>) {
   return (
     <RadioGroupPrimitive
       data-slot="radio-group"
@@ -14,7 +20,11 @@ function RadioGroup({ className = "", value, onValueChange, ...props }) {
   );
 }
 
-function RadioGroupItem({ className = "", value, ...props }) {
+function RadioGroupItem({
+  className = "",
+  value,
+  ...props
+}: ComponentProps<typeof RadioPrimitive.Root>) {
   return (
     <RadioPrimitive.Root
       data-slot="radio-group-item"

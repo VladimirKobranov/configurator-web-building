@@ -1,5 +1,6 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
-import { cva } from "class-variance-authority";
+import type { ComponentProps } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const buttonVariants = cva(
@@ -37,24 +38,22 @@ const buttonVariants = cva(
   },
 );
 
+type ButtonProps = ComponentProps<typeof ButtonPrimitive> &
+  VariantProps<typeof buttonVariants>;
+
 function Button({
   className = "",
   variant = "default",
   size = "default",
   ...props
-}) {
+}: ButtonProps) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(
         buttonVariants({
-          variant:
-            /** @type {"default" | "destructive" | "ghost" | "link" | "outline" | "secondary"} */ (
-              variant
-            ),
-          size: /** @type {"default" | "icon" | "icon-lg" | "icon-sm" | "icon-xs" | "lg" | "sm" | "xs"} */ (
-            size
-          ),
+          variant,
+          size,
           className,
         }),
       )}

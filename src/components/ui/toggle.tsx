@@ -1,5 +1,6 @@
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
-import { cva } from "class-variance-authority";
+import type { ComponentProps } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const toggleVariants = cva(
@@ -24,13 +25,15 @@ const toggleVariants = cva(
   },
 );
 
-/** @param {React.ComponentProps<typeof TogglePrimitive> & { variant?: "default" | "outline", size?: "default" | "sm" | "lg" }} props */
+type ToggleProps = ComponentProps<typeof TogglePrimitive> &
+  VariantProps<typeof toggleVariants>;
+
 function Toggle({
   className,
   variant = "default",
   size = "default",
   ...props
-}) {
+}: ToggleProps) {
   return (
     <TogglePrimitive
       data-slot="toggle"

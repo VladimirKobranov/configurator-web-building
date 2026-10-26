@@ -1,8 +1,12 @@
 "use client";
 
 import { cn } from "cn";
+import type { LabelHTMLAttributes } from "react";
 
-function Label({ className = "", ...props }) {
+function Label({
+  className = "",
+  ...props
+}: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
       data-slot="label"
