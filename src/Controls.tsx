@@ -185,7 +185,7 @@ function Controls({ open, onToggle }: ControlsProps) {
   return (
     <aside
       aria-label="Configurator settings"
-      className={`absolute right-4 top-4 z-10 flex w-[min(25rem,calc(100%_-_2rem))] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-md ${open ? "max-h-[calc(100dvh_-_2rem)]" : ""}`}
+      className="absolute right-4 top-4 z-10 flex max-h-[calc(100dvh_-_5rem)] min-h-0 w-[min(25rem,calc(100%_-_2rem))] flex-col overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-md"
     >
       <header className={open ? "border-b border-border" : ""}>
         <Button
@@ -223,21 +223,21 @@ function Controls({ open, onToggle }: ControlsProps) {
             <RangeControl
               label="Depth"
               value={sliderValueX}
-              min={0}
+              min={2}
               max={12}
               onChange={(value) => updateDimension("x", value)}
             />
             <RangeControl
               label="Width"
               value={sliderValueZ}
-              min={0}
+              min={2}
               max={12}
               onChange={(value) => updateDimension("z", value)}
             />
             <RangeControl
               label="Height"
               value={sliderValueY}
-              min={0}
+              min={1}
               max={12}
               onChange={(value) => updateDimension("y", value)}
             />
@@ -394,7 +394,7 @@ function Controls({ open, onToggle }: ControlsProps) {
 
         <section className="space-y-3 border-b border-border py-4 last:border-b-0">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Generation
+            Basic controls
           </h2>
           <div className="space-y-3">
             <RangeControl

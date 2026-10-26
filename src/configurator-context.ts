@@ -1,6 +1,7 @@
 import { createContext, type Dispatch, type SetStateAction } from "react";
 
 export type DoorSide = "Front" | "Back" | "Left" | "Right";
+export type Theme = "system" | "light" | "dark";
 type StateSetter<T> = Dispatch<SetStateAction<T>>;
 
 export interface ConfiguratorState {
@@ -30,6 +31,9 @@ export interface ConfiguratorState {
   setRoofAccessoriesPercentage: StateSetter<number>;
   balconyAccessoriesPercentage: number;
   setBalconyAccessoriesPercentage: StateSetter<number>;
+  theme: Theme;
+  setTheme: StateSetter<Theme>;
+  systemDark: boolean;
   lightAzimuth: number;
   setLightAzimuth: StateSetter<number>;
   lightHeight: number;

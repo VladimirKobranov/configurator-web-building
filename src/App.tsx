@@ -2,6 +2,7 @@ import { Suspense, useContext, useEffect, useState, useCallback } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
+  Bounds,
   Environment,
   Html,
   OrbitControls,
@@ -57,12 +58,14 @@ function Loader() {
 
 export default function App({ orbitControlsRef }: AppProps) {
   const [gridData, setGridData] = useState<GridItem[]>([]);
+  const [boundsRevision, setBoundsRevision] = useState("");
 
   const xTile = 3.0;
   const yTile = 3.0;
   const zTile = 3.0;
 
   const { sliderValueX } = useContext(SliderContext);
+  const { theme, systemDark } = useContext(SliderContext);
   const { sliderValueY } = useContext(SliderContext);
   const { sliderValueZ } = useContext(SliderContext);
   const { seed } = useContext(SliderContext);
@@ -81,13 +84,48 @@ export default function App({ orbitControlsRef }: AppProps) {
   const { lightAzimuth, lightHeight, lightIntensity } =
     useContext(SliderContext);
 
+  const boundsKey = `${sliderValueX}-${sliderValueY}-${sliderValueZ}-${lightAzimuth}-${lightHeight}`;
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setBoundsRevision(boundsKey), 180);
+    return () => window.clearTimeout(timeout);
+  }, [boundsKey]);
+
   const buildingHeight = sliderValueY * yTile;
   const footprintRadius = Math.hypot(
     (sliderValueX * xTile) / 2,
     (sliderValueZ * zTile) / 2,
   );
-  const shadowExtent = Math.max(18, footprintRadius + buildingHeight * 0.75);
+  const safeLightHeight = Math.max(lightHeight, 0.5);
+  const shadowMargin = 16;
+  const groundExtent =
+    footprintRadius + buildingHeight / safeLightHeight + shadowMargin;
+  const lightAngle = MathUtils.degToRad(lightAzimuth);
+  const shadowTravel = (buildingHeight + 3) / safeLightHeight;
+  const shadowOffsetX = -Math.sin(lightAngle) * shadowTravel;
+  const shadowOffsetZ = -Math.cos(lightAngle) * shadowTravel;
+  // The camera frame includes the building and the full projected shadow, but
+  // stays centered on the building so the settings panel does not cover it.
+  const shadowBoundsWidth =
+    sliderValueX * xTile + Math.abs(shadowOffsetX) * 2 + 8;
+  const shadowBoundsDepth =
+    sliderValueZ * zTile + Math.abs(shadowOffsetZ) * 2 + 8;
+  // Keep the receiving plane large enough for the tallest building's shadow.
+  // The directional shadow camera has its own world-space bounds below.
+  const shadowExtent = Math.max(
+    24,
+    Math.SQRT2 * groundExtent + buildingHeight + 8,
+  );
   const lightDistance = Math.max(15, buildingHeight);
+  // Bound the light-camera depth by the complete scene volume. The previous
+  // fixed multiple of lightDistance could clip the far edge of the shadow
+  // when the building was tall or the light was low.
+  const lightPositionLength = Math.hypot(
+    lightDistance,
+    lightHeight * lightDistance,
+  );
+  const sceneRadius = Math.hypot(Math.SQRT2 * groundExtent, buildingHeight + 3);
+  const shadowCameraFar = lightPositionLength + sceneRadius + 10;
 
   const generateGrid = useCallback(() => {
     const gridData: GridItem[] = [];
@@ -370,7 +408,14 @@ export default function App({ orbitControlsRef }: AppProps) {
       }}
     >
       <Suspense fallback={<Loader />}>
-        <color attach="background" args={["#ececec"]} />
+        <color
+          attach="background"
+          args={[
+            theme === "dark" || (theme === "system" && systemDark)
+              ? "#171717"
+              : "#ececec",
+          ]}
+        />
         <ambientLight intensity={0.4} />
         <directionalLight
           position={[
@@ -384,7 +429,7 @@ export default function App({ orbitControlsRef }: AppProps) {
           shadow-bias={-0.0001}
           shadow-normalBias={0.02}
           shadow-camera-near={1}
-          shadow-camera-far={lightDistance * 4}
+          shadow-camera-far={shadowCameraFar}
           shadow-camera-left={-shadowExtent}
           shadow-camera-right={shadowExtent}
           shadow-camera-top={shadowExtent}
@@ -395,53 +440,79 @@ export default function App({ orbitControlsRef }: AppProps) {
           background={false}
           environmentIntensity={0.4}
         />
-        {gridData.map((item, index) => (
-          <group key={index}>
-            {item.meshType !== "null" && (
-              <Model
-                scale={1}
-                name={item.meshType}
-                position={item.position}
-                rotation={item.rotation}
+        <Bounds
+          key={boundsRevision || boundsKey}
+          maxDuration={0.35}
+          fit
+          clip
+          observe
+          margin={1.25}
+        >
+          <group>
+            {gridData.map((item, index) => (
+              <group key={index}>
+                {item.meshType !== "null" && (
+                  <Model
+                    scale={1}
+                    name={item.meshType}
+                    position={item.position}
+                    rotation={item.rotation}
+                  />
+                )}
+                {item.pipeMeshType !== "null" && (
+                  <Model
+                    scale={1}
+                    name={item.pipeMeshType}
+                    position={item.position}
+                    rotation={item.rotation}
+                  />
+                )}
+                {item.aircondMeshType !== "null" && (
+                  <Model
+                    scale={1}
+                    name={item.aircondMeshType}
+                    position={item.position}
+                    rotation={item.rotation}
+                  />
+                )}
+                {item.roofAccessoriesMesh !== "null" && (
+                  <Model
+                    scale={1}
+                    name={item.roofAccessoriesMesh}
+                    position={item.position}
+                    rotation={item.rotation}
+                  />
+                )}
+                {item.balconyAccessoriesMesh !== "null" && (
+                  <Model
+                    scale={1}
+                    name={item.balconyAccessoriesMesh}
+                    position={item.position}
+                    rotation={item.rotation}
+                  />
+                )}
+              </group>
+            ))}
+            <mesh position={[0, buildingHeight / 2, 0]}>
+              <boxGeometry
+                args={[
+                  shadowBoundsWidth,
+                  buildingHeight + 6,
+                  shadowBoundsDepth,
+                ]}
               />
-            )}
-            {item.pipeMeshType !== "null" && (
-              <Model
-                scale={1}
-                name={item.pipeMeshType}
-                position={item.position}
-                rotation={item.rotation}
+              <meshBasicMaterial
+                transparent
+                opacity={0}
+                depthWrite={false}
+                colorWrite={false}
               />
-            )}
-            {item.aircondMeshType !== "null" && (
-              <Model
-                scale={1}
-                name={item.aircondMeshType}
-                position={item.position}
-                rotation={item.rotation}
-              />
-            )}
-            {item.roofAccessoriesMesh !== "null" && (
-              <Model
-                scale={1}
-                name={item.roofAccessoriesMesh}
-                position={item.position}
-                rotation={item.rotation}
-              />
-            )}
-            {item.balconyAccessoriesMesh !== "null" && (
-              <Model
-                scale={1}
-                name={item.balconyAccessoriesMesh}
-                position={item.position}
-                rotation={item.rotation}
-              />
-            )}
+            </mesh>
           </group>
-        ))}
+        </Bounds>
 
         <mesh receiveShadow rotation-x={-Math.PI / 2} position={[0, -0.01, 0]}>
-          <planeGeometry args={[100, 100]} />
+          <planeGeometry args={[groundExtent * 2, groundExtent * 2]} />
           <shadowMaterial transparent opacity={0.28} />
         </mesh>
 

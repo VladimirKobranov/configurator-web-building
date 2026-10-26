@@ -1,10 +1,28 @@
-import { useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { SliderContext, type DoorSide } from "./configurator-context";
+import {
+  SliderContext,
+  type DoorSide,
+  type Theme,
+} from "./configurator-context";
 import App from "./App";
 import Controls from "./Controls";
 import Footer from "./Footer";
 import DebugPanel from "./DebugPanel";
+import ThemeControl from "./ThemeControl";
+
+const THEME_STORAGE_KEY = "building-configurator-theme";
+
+function readStoredTheme(): Theme {
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (!stored) return "system";
+    const theme = JSON.parse(stored)?.state?.theme;
+    return theme === "light" || theme === "dark" ? theme : "system";
+  } catch {
+    return "system";
+  }
+}
 
 export default function Configurator() {
   const showDebugPanel =
@@ -27,10 +45,57 @@ export default function Configurator() {
     useState(20);
   const [rotateSpeed, setRotateSpeed] = useState(0.2);
   const [controlsOpen, setControlsOpen] = useState(true);
+  const [theme, setTheme] = useState<Theme>(readStoredTheme);
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
   const [lightAzimuth, setLightAzimuth] = useState(293);
   const [lightHeight, setLightHeight] = useState(1.3);
   const [lightIntensity, setLightIntensity] = useState(2);
   const orbitControlsRef = useRef<OrbitControlsImpl | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateSystemTheme = () => setSystemDark(media.matches);
+    media.addEventListener("change", updateSystemTheme);
+    return () => media.removeEventListener("change", updateSystemTheme);
+  }, []);
+
+  useEffect(() => {
+    const syncStoredTheme = (event: StorageEvent) => {
+      if (event.key !== THEME_STORAGE_KEY) return;
+      setTheme(readStoredTheme());
+    };
+    window.addEventListener("storage", syncStoredTheme);
+    return () => window.removeEventListener("storage", syncStoredTheme);
+  }, []);
+
+  useLayoutEffect(() => {
+    const isDark = theme === "dark" || (theme === "system" && systemDark);
+    const root = document.documentElement;
+    root.classList.toggle("dark", isDark);
+    root.classList.toggle("light", !isDark);
+    root.style.colorScheme = isDark ? "dark" : "light";
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", isDark ? "#171717" : "#ffffff");
+    document
+      .querySelector('meta[name="color-scheme"]')
+      ?.setAttribute("content", isDark ? "dark" : "light");
+
+    try {
+      if (theme === "system") {
+        localStorage.removeItem(THEME_STORAGE_KEY);
+      } else {
+        localStorage.setItem(
+          THEME_STORAGE_KEY,
+          JSON.stringify({ state: { theme }, version: 0 }),
+        );
+      }
+    } catch {
+      // Theme still applies for this session when storage is unavailable.
+    }
+  }, [theme, systemDark]);
 
   const contextValue = {
     sliderValueX,
@@ -59,6 +124,9 @@ export default function Configurator() {
     setRoofAccessoriesPercentage,
     balconyAccessoriesPercentage,
     setBalconyAccessoriesPercentage,
+    theme,
+    setTheme,
+    systemDark,
     lightAzimuth,
     setLightAzimuth,
     lightHeight,
@@ -78,6 +146,7 @@ export default function Configurator() {
           open={controlsOpen}
           onToggle={() => setControlsOpen((open) => !open)}
         />
+        <ThemeControl theme={theme} onChange={setTheme} />
         <Footer />
       </main>
     </SliderContext.Provider>
