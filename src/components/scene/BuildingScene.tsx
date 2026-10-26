@@ -391,7 +391,7 @@ export default function App({ orbitControlsRef, onReady }: AppProps) {
 
   return (
     <Canvas
-      shadows="soft"
+      shadows="percentage"
       camera={{
         position: [-56.703, 28.98, -49.734],
         fov: 30,
