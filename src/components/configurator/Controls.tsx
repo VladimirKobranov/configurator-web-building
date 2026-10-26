@@ -1,7 +1,11 @@
-import { useContext, useEffect, useId } from "react";
+import { useId } from "react";
 import type { ReactNode } from "react";
 import { Settings2 } from "lucide-react";
-import { SliderContext, type DoorSide } from "@/contexts/configurator-context";
+import { useShallow } from "zustand/react/shallow";
+import {
+  useConfiguratorStore,
+  type DoorSide,
+} from "@/store/configurator-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -88,40 +92,64 @@ function ToggleField({
   );
 }
 
-interface ControlsProps {
-  open: boolean;
-  onToggle: () => void;
-}
-
-function Controls({ open, onToggle }: ControlsProps) {
+function Controls() {
   const {
     sliderValueX,
-    setSliderValueX,
     sliderValueY,
-    setSliderValueY,
     sliderValueZ,
-    setSliderValueZ,
     seed,
-    setSeed,
     rotateSpeed,
-    setRotateSpeed,
     doorSide,
-    setDoorSide,
     doorPosition,
-    setDoorPosition,
     balconyPosition,
-    setBalconyPosition,
     balconySide,
-    setBalconySide,
     pipeBool,
-    setPipeBool,
     airCondPercentage,
-    setAirCondPercentage,
     roofAccessoriesPercentage,
-    setRoofAccessoriesPercentage,
     balconyAccessoriesPercentage,
+    controlsOpen: open,
+    setDimension,
+    setSeed,
+    setRotateSpeed,
+    setDoorSide,
+    setDoorPosition,
+    toggleBalconyPosition,
+    setBalconySide,
+    setPipeBool,
+    setAirCondPercentage,
+    setRoofAccessoriesPercentage,
     setBalconyAccessoriesPercentage,
-  } = useContext(SliderContext);
+    toggleControls,
+  } = useConfiguratorStore(
+    useShallow((state) => ({
+      sliderValueX: state.sliderValueX,
+      sliderValueY: state.sliderValueY,
+      sliderValueZ: state.sliderValueZ,
+      seed: state.seed,
+      rotateSpeed: state.rotateSpeed,
+      doorSide: state.doorSide,
+      doorPosition: state.doorPosition,
+      balconyPosition: state.balconyPosition,
+      balconySide: state.balconySide,
+      pipeBool: state.pipeBool,
+      airCondPercentage: state.airCondPercentage,
+      roofAccessoriesPercentage: state.roofAccessoriesPercentage,
+      balconyAccessoriesPercentage: state.balconyAccessoriesPercentage,
+      controlsOpen: state.controlsOpen,
+      setDimension: state.setDimension,
+      setSeed: state.setSeed,
+      setRotateSpeed: state.setRotateSpeed,
+      setDoorSide: state.setDoorSide,
+      setDoorPosition: state.setDoorPosition,
+      toggleBalconyPosition: state.toggleBalconyPosition,
+      setBalconySide: state.setBalconySide,
+      setPipeBool: state.setPipeBool,
+      setAirCondPercentage: state.setAirCondPercentage,
+      setRoofAccessoriesPercentage: state.setRoofAccessoriesPercentage,
+      setBalconyAccessoriesPercentage: state.setBalconyAccessoriesPercentage,
+      toggleControls: state.toggleControls,
+    })),
+  );
 
   const maxBalconyPosition = Math.max(
     1,
@@ -132,32 +160,8 @@ function Controls({ open, onToggle }: ControlsProps) {
   const maxDoorPosition = Math.max(1, sideLength - 2);
   const canPlaceDoor = sideLength > 2;
 
-  useEffect(() => {
-    setBalconyPosition((positions) =>
-      positions.filter(
-        (position) => position >= 1 && position <= maxBalconyPosition,
-      ),
-    );
-  }, [maxBalconyPosition, setBalconyPosition]);
-
   function updateDimension(side: "x" | "y" | "z", value: number) {
-    if (side === "x") {
-      setSliderValueX(value);
-      if (doorSide === "Left" || doorSide === "Right") {
-        setDoorPosition((position) =>
-          Math.min(position, Math.max(1, value - 2)),
-        );
-      }
-    } else if (side === "y") {
-      setSliderValueY(value);
-    } else {
-      setSliderValueZ(value);
-      if (doorSide === "Front" || doorSide === "Back") {
-        setDoorPosition((position) =>
-          Math.min(position, Math.max(1, value - 2)),
-        );
-      }
-    }
+    setDimension(side, value);
   }
 
   function updateDoorSide(side: unknown) {
@@ -167,19 +171,6 @@ function Controls({ open, onToggle }: ControlsProps) {
     }
     const selectedSide = side as DoorSide;
     setDoorSide(selectedSide);
-    const length =
-      selectedSide === "Front" || selectedSide === "Back"
-        ? sliderValueZ
-        : sliderValueX;
-    setDoorPosition((position) => Math.min(position, Math.max(1, length - 2)));
-  }
-
-  function toggleBalconyPosition(position: number) {
-    setBalconyPosition((current) =>
-      current.includes(position)
-        ? current.filter((item) => item !== position)
-        : [...current, position].sort((a, b) => a - b),
-    );
   }
 
   return (
@@ -194,7 +185,7 @@ function Controls({ open, onToggle }: ControlsProps) {
           className="h-auto w-full justify-start gap-3 rounded-none px-5 py-4 text-left hover:bg-muted/50"
           aria-controls="configurator-settings-content"
           aria-expanded={open}
-          onClick={onToggle}
+          onClick={toggleControls}
         >
           <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Settings2 className="size-4" aria-hidden="true" />

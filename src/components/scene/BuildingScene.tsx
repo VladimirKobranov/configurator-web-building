@@ -1,4 +1,4 @@
-import { Suspense, useContext, useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
@@ -8,11 +8,12 @@ import {
   OrbitControls,
   useProgress,
 } from "@react-three/drei";
-import { SliderContext } from "@/contexts/configurator-context";
 import { Model } from "./Model";
 import { MathUtils } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import seedRandom from "seedrandom";
+import { useShallow } from "zustand/react/shallow";
+import { useConfiguratorStore } from "@/store/configurator-store";
 
 type Vector3Tuple = [number, number, number];
 
@@ -64,25 +65,47 @@ export default function App({ orbitControlsRef }: AppProps) {
   const yTile = 3.0;
   const zTile = 3.0;
 
-  const { sliderValueX } = useContext(SliderContext);
-  const { theme, systemDark } = useContext(SliderContext);
-  const { sliderValueY } = useContext(SliderContext);
-  const { sliderValueZ } = useContext(SliderContext);
-  const { seed } = useContext(SliderContext);
-
-  const { doorSide } = useContext(SliderContext);
-  const { doorPosition } = useContext(SliderContext);
-  const { balconyPosition } = useContext(SliderContext);
-  const { balconySide } = useContext(SliderContext);
-
-  const { pipeBool } = useContext(SliderContext);
-  const { airCondPercentage } = useContext(SliderContext);
-  const { roofAccessoriesPercentage } = useContext(SliderContext);
-  const { balconyAccessoriesPercentage } = useContext(SliderContext);
-
-  const { rotateSpeed } = useContext(SliderContext);
-  const { lightAzimuth, lightHeight, lightIntensity } =
-    useContext(SliderContext);
+  const {
+    sliderValueX,
+    sliderValueY,
+    sliderValueZ,
+    theme,
+    systemDark,
+    seed,
+    doorSide,
+    doorPosition,
+    balconyPosition,
+    balconySide,
+    pipeBool,
+    airCondPercentage,
+    roofAccessoriesPercentage,
+    balconyAccessoriesPercentage,
+    rotateSpeed,
+    lightAzimuth,
+    lightHeight,
+    lightIntensity,
+  } = useConfiguratorStore(
+    useShallow((state) => ({
+      sliderValueX: state.sliderValueX,
+      sliderValueY: state.sliderValueY,
+      sliderValueZ: state.sliderValueZ,
+      theme: state.theme,
+      systemDark: state.systemDark,
+      seed: state.seed,
+      doorSide: state.doorSide,
+      doorPosition: state.doorPosition,
+      balconyPosition: state.balconyPosition,
+      balconySide: state.balconySide,
+      pipeBool: state.pipeBool,
+      airCondPercentage: state.airCondPercentage,
+      roofAccessoriesPercentage: state.roofAccessoriesPercentage,
+      balconyAccessoriesPercentage: state.balconyAccessoriesPercentage,
+      rotateSpeed: state.rotateSpeed,
+      lightAzimuth: state.lightAzimuth,
+      lightHeight: state.lightHeight,
+      lightIntensity: state.lightIntensity,
+    })),
+  );
 
   const boundsKey = `${sliderValueX}-${sliderValueY}-${sliderValueZ}-${lightAzimuth}-${lightHeight}`;
 

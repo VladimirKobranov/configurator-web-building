@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { MutableRefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { SliderContext } from "@/contexts/configurator-context";
+import { useShallow } from "zustand/react/shallow";
+import { useConfiguratorStore } from "@/store/configurator-store";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -70,7 +71,16 @@ export default function DebugPanel({ orbitControlsRef }: DebugPanelProps) {
     setLightHeight,
     lightIntensity,
     setLightIntensity,
-  } = useContext(SliderContext);
+  } = useConfiguratorStore(
+    useShallow((state) => ({
+      lightAzimuth: state.lightAzimuth,
+      setLightAzimuth: state.setLightAzimuth,
+      lightHeight: state.lightHeight,
+      setLightHeight: state.setLightHeight,
+      lightIntensity: state.lightIntensity,
+      setLightIntensity: state.setLightIntensity,
+    })),
+  );
   const [camera, setCamera] = useState<CameraSnapshot | null>(null);
 
   useEffect(() => {
