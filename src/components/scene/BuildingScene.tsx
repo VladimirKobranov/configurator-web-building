@@ -135,8 +135,6 @@ export default function App({ orbitControlsRef, onReady }: AppProps) {
             y * yTile, //- yTile / 2
             z * zTile - ((sliderValueZ - 1) * zTile) / 2,
           ];
-          if (sliderValueX === 1 || sliderValueY === 0 || sliderValueZ === 1)
-            break;
           // Each feature has its own draw, so changing one setting cannot
           // shift the random choices for other cells or features.
           const randomFor = (feature: string) =>
@@ -355,7 +353,15 @@ export default function App({ orbitControlsRef, onReady }: AppProps) {
             balconyAccessoriesMesh: balconyAccessoriesMesh,
           };
 
-          gridData.push(gridItem);
+          if (
+            gridItem.meshType !== "null" ||
+            gridItem.pipeMeshType !== "null" ||
+            gridItem.aircondMeshType !== "null" ||
+            gridItem.roofAccessoriesMesh !== "null" ||
+            gridItem.balconyAccessoriesMesh !== "null"
+          ) {
+            gridData.push(gridItem);
+          }
         }
       }
     }
@@ -381,20 +387,7 @@ export default function App({ orbitControlsRef, onReady }: AppProps) {
 
   useEffect(() => {
     generateGrid();
-  }, [
-    sliderValueX,
-    sliderValueY,
-    sliderValueZ,
-    doorSide,
-    doorPosition,
-    balconyPosition,
-    balconySide,
-    pipeBool,
-    airCondPercentage,
-    roofAccessoriesPercentage,
-    balconyAccessoriesPercentage,
-    generateGrid,
-  ]);
+  }, [generateGrid]);
 
   return (
     <Canvas
