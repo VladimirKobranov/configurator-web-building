@@ -1,40 +1,48 @@
-# Web Building Configurator
+# Panelka Building Configurator
 
-`PANELKA`
+**Version 2.0.0**
 
-<sub>version 0.9</sub>
+Configure a panel apartment building and explore the result in an interactive 3D preview.
 
-## Info
+![Panelka Building Configurator](pics/pic.png)
 
-Web building configurator made with `React`,`Threejs`,`Fiber`,`Drei`.
+## Features
 
-**List of possibilities:**
+- Set the building's depth, width, and height.
+- Choose the entrance side and position.
+- Select balcony positions and facade sides.
+- Control the probability of air conditioners, roof accessories, and balcony gardens.
+- Use a seed to reproduce the same generated building.
+- Rotate the camera and switch between system, light, and dark themes.
 
-- Length, width, height
-- Entrance door position and location
-- Balcony sides and locations
-- Accessories with random percentage
-- Global seed
-- Camera rotation value
+## Tech stack
 
-## Updating the 3D model
+- React 18 and TypeScript
+- Vite 8
+- Three.js, React Three Fiber, and Drei
+- Zustand
+- Tailwind CSS 4, Base UI, and shadcn/ui
 
-Put the updated model at the project root as `building.glb`, then run:
+## Getting started
+
+Use Node.js 20.19+ or 22.12+.
 
 ```sh
-./scripts/compress-model.sh
+npm install
+npm run dev
 ```
 
-The script writes a Draco-compressed model to `public/objects/building.glb`. You can also pass a source path: `./scripts/compress-model.sh path/to/model.glb`.
+Open the local URL printed by Vite. To show temporary scene development controls, add `?dev=true` to the URL.
 
----
+## Project checks
 
-![pic_1](pics/pic_1.png)
+```sh
+npm run check  # formatting, TypeScript, and lint
+npm run build  # production build
+npm run preview
+```
 
-<p align="center">
-<sub >pic 1</sub>
-</p>
 
-### References
+## Credits
 
-- Art style and idea: [Nastya Zhenunk](https://www.artstation.com/artwork/m8ZPZv)
+- Art style and inspiration: [Nastya Zhenunk](https://www.artstation.com/artwork/m8ZPZv)
