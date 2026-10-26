@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { SliderContext } from "./configurator-context";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { SliderContext, type DoorSide } from "./configurator-context";
 import App from "./App";
 import Controls from "./Controls";
 import Footer from "./Footer";
@@ -12,10 +13,12 @@ export default function Configurator() {
   const [sliderValueY, setSliderValueY] = useState(5);
   const [sliderValueZ, setSliderValueZ] = useState(8);
   const [seed, setSeed] = useState(50);
-  const [doorSide, setDoorSide] = useState("Front");
+  const [doorSide, setDoorSide] = useState<DoorSide>("Front");
   const [doorPosition, setDoorPosition] = useState(2);
-  const [balconyPosition, setBalconyPosition] = useState([1, 3, 4, 6]);
-  const [balconySide, setBalconySide] = useState(["Front", "Back"]);
+  const [balconyPosition, setBalconyPosition] = useState<number[]>([
+    1, 3, 4, 6,
+  ]);
+  const [balconySide, setBalconySide] = useState<string[]>(["Front", "Back"]);
   const [pipeBool, setPipeBool] = useState(true);
   const [airCondPercentage, setAirCondPercentage] = useState(25);
   const [roofAccessoriesPercentage, setRoofAccessoriesPercentage] =
@@ -27,7 +30,7 @@ export default function Configurator() {
   const [lightAzimuth, setLightAzimuth] = useState(293);
   const [lightHeight, setLightHeight] = useState(1.3);
   const [lightIntensity, setLightIntensity] = useState(2);
-  const orbitControlsRef = useRef(null);
+  const orbitControlsRef = useRef<OrbitControlsImpl | null>(null);
 
   const contextValue = {
     sliderValueX,
