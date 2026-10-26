@@ -160,7 +160,8 @@ function Controls({ open, onToggle }: ControlsProps) {
     }
   }
 
-  function updateDoorSide(side: string) {
+  function updateDoorSide(side: unknown) {
+    if (typeof side !== "string") return;
     if (!("Front Back Left Right".split(" ") as string[]).includes(side)) {
       return;
     }

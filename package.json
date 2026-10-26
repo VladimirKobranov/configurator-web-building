@@ -31,8 +31,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\" \"*.{json,md,mjs,js}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css}\" \"*.{json,md,mjs,js}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\" \"*.{json,md,mjs,mts,ts,js}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css}\" \"*.{json,md,mjs,mts,ts,js}\"",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "check": "npm run format:check && npm run typecheck && npm run lint"

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import type { RefObject } from "react";
+import type { MutableRefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { SliderContext } from "./configurator-context";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,9 @@ function DebugSlider({
         min={min}
         max={max}
         step={step}
-        onValueChange={(values: number[]) => onChange(values[0] ?? value)}
+        onValueChange={(values) =>
+          onChange(typeof values === "number" ? values : (values[0] ?? value))
+        }
       />
     </div>
   );
@@ -57,7 +59,7 @@ function readCamera(controls: OrbitControlsImpl | null): CameraSnapshot | null {
 }
 
 interface DebugPanelProps {
-  orbitControlsRef: RefObject<OrbitControlsImpl | null>;
+  orbitControlsRef: MutableRefObject<OrbitControlsImpl | null>;
 }
 
 export default function DebugPanel({ orbitControlsRef }: DebugPanelProps) {

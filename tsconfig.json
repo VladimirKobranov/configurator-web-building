@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
     "noEmit": true,
     "target": "ES2022",
     "module": "ESNext",
@@ -13,7 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": false
+    "strict": true
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.mts"]
 }

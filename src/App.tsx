@@ -1,5 +1,5 @@
 import { Suspense, useContext, useEffect, useState, useCallback } from "react";
-import type { RefObject } from "react";
+import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,
@@ -26,7 +26,7 @@ interface GridItem {
 }
 
 interface AppProps {
-  orbitControlsRef: RefObject<OrbitControlsImpl | null>;
+  orbitControlsRef: MutableRefObject<OrbitControlsImpl | null>;
 }
 
 function Loader() {
