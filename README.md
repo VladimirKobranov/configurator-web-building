@@ -2,8 +2,6 @@
 
 `PANELKA`
 
-#### The app link: [Configurator](http://building-configurator.web.app)
-
 <sub>version 0.9</sub>
 
 ## Info
