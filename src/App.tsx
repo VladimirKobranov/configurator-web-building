@@ -1,4 +1,5 @@
 import { Suspense, useContext, useEffect, useState, useCallback } from "react";
+import type { RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,
@@ -9,7 +10,24 @@ import {
 import { SliderContext } from "./configurator-context";
 import { Model } from "./Model";
 import { MathUtils } from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import seedRandom from "seedrandom";
+
+type Vector3Tuple = [number, number, number];
+
+interface GridItem {
+  position: Vector3Tuple;
+  rotation: Vector3Tuple;
+  meshType: string;
+  pipeMeshType: string;
+  aircondMeshType: string;
+  roofAccessoriesMesh: string;
+  balconyAccessoriesMesh: string;
+}
+
+interface AppProps {
+  orbitControlsRef: RefObject<OrbitControlsImpl | null>;
+}
 
 function Loader() {
   const { progress } = useProgress();
@@ -37,8 +55,8 @@ function Loader() {
   );
 }
 
-export default function App({ orbitControlsRef }) {
-  const [gridData, setGridData] = useState([]);
+export default function App({ orbitControlsRef }: AppProps) {
+  const [gridData, setGridData] = useState<GridItem[]>([]);
 
   const xTile = 3.0;
   const yTile = 3.0;
@@ -72,12 +90,12 @@ export default function App({ orbitControlsRef }) {
   const lightDistance = Math.max(15, buildingHeight);
 
   const generateGrid = useCallback(() => {
-    const gridData = [];
+    const gridData: GridItem[] = [];
 
     for (let x = 0.0; x < sliderValueX; x++) {
       for (let y = 0.0; y < sliderValueY + 1; y++) {
         for (let z = 0.0; z < sliderValueZ; z++) {
-          const position = [
+          const position: Vector3Tuple = [
             x * xTile - ((sliderValueX - 1) * xTile) / 2,
             y * yTile, //- yTile / 2
             z * zTile - ((sliderValueZ - 1) * zTile) / 2,
@@ -86,7 +104,7 @@ export default function App({ orbitControlsRef }) {
             break;
           // Each feature has its own draw, so changing one setting cannot
           // shift the random choices for other cells or features.
-          const randomFor = (feature) =>
+          const randomFor = (feature: string) =>
             seedRandom(`${seed}:${x}:${y}:${z}:${feature}`)();
           let angleX = MathUtils.degToRad(0);
           let angleY = MathUtils.degToRad(0);
@@ -291,7 +309,7 @@ export default function App({ orbitControlsRef }) {
             }
           }
 
-          const rotation = [angleX, angleY, angleZ];
+          const rotation: Vector3Tuple = [angleX, angleY, angleZ];
           const gridItem = {
             position: position,
             rotation: rotation,
