@@ -17,6 +17,16 @@ Web building configurator made with `React`,`Threejs`,`Fiber`,`Drei`.
 - Global seed
 - Camera rotation value
 
+## Updating the 3D model
+
+Put the updated model at the project root as `building.glb`, then run:
+
+```sh
+./scripts/compress-model.sh
+```
+
+The script writes a Draco-compressed model to `public/objects/building.glb`. You can also pass a source path: `./scripts/compress-model.sh path/to/model.glb`.
+
 ---
 
 ![pic_1](pics/pic_1.png)
