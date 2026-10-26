@@ -1,12 +1,23 @@
 import { useContext, useEffect, useId } from "react";
+import type { ReactNode } from "react";
 import { Settings2 } from "lucide-react";
-import { SliderContext } from "./configurator-context";
+import { SliderContext, type DoorSide } from "./configurator-context";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+interface RangeControlProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  onChange: (value: number) => void;
+  format?: (value: number) => ReactNode;
+}
 
 function RangeControl({
   label,
@@ -16,7 +27,7 @@ function RangeControl({
   step = 1,
   onChange,
   format = (currentValue) => currentValue,
-}) {
+}: RangeControlProps) {
   const id = useId();
 
   return (
@@ -48,7 +59,19 @@ function RangeControl({
   );
 }
 
-function ToggleField({ id, label, checked, onCheckedChange }) {
+interface ToggleFieldProps {
+  id: string;
+  label: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}
+
+function ToggleField({
+  id,
+  label,
+  checked,
+  onCheckedChange,
+}: ToggleFieldProps) {
   return (
     <label
       htmlFor={id}
@@ -65,7 +88,12 @@ function ToggleField({ id, label, checked, onCheckedChange }) {
   );
 }
 
-function Controls({ open, onToggle }) {
+interface ControlsProps {
+  open: boolean;
+  onToggle: () => void;
+}
+
+function Controls({ open, onToggle }: ControlsProps) {
   const {
     sliderValueX,
     setSliderValueX,
@@ -112,7 +140,7 @@ function Controls({ open, onToggle }) {
     );
   }, [maxBalconyPosition, setBalconyPosition]);
 
-  function updateDimension(side, value) {
+  function updateDimension(side: "x" | "y" | "z", value: number) {
     if (side === "x") {
       setSliderValueX(value);
       if (doorSide === "Left" || doorSide === "Right") {
@@ -132,14 +160,20 @@ function Controls({ open, onToggle }) {
     }
   }
 
-  function updateDoorSide(side) {
-    setDoorSide(side);
+  function updateDoorSide(side: string) {
+    if (!("Front Back Left Right".split(" ") as string[]).includes(side)) {
+      return;
+    }
+    const selectedSide = side as DoorSide;
+    setDoorSide(selectedSide);
     const length =
-      side === "Front" || side === "Back" ? sliderValueZ : sliderValueX;
+      selectedSide === "Front" || selectedSide === "Back"
+        ? sliderValueZ
+        : sliderValueX;
     setDoorPosition((position) => Math.min(position, Math.max(1, length - 2)));
   }
 
-  function toggleBalconyPosition(position) {
+  function toggleBalconyPosition(position: number) {
     setBalconyPosition((current) =>
       current.includes(position)
         ? current.filter((item) => item !== position)

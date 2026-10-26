@@ -1,10 +1,28 @@
 import { useContext, useEffect, useState } from "react";
+import type { RefObject } from "react";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { SliderContext } from "./configurator-context";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 
-function DebugSlider({ label, value, min, max, step = 1, onChange }) {
+interface DebugSliderProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  onChange: (value: number) => void;
+}
+
+function DebugSlider({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  onChange,
+}: DebugSliderProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
@@ -17,13 +35,18 @@ function DebugSlider({ label, value, min, max, step = 1, onChange }) {
         min={min}
         max={max}
         step={step}
-        onValueChange={(values) => onChange(values[0])}
+        onValueChange={(values: number[]) => onChange(values[0] ?? value)}
       />
     </div>
   );
 }
 
-function readCamera(controls) {
+interface CameraSnapshot {
+  position: string[];
+  target: string[];
+}
+
+function readCamera(controls: OrbitControlsImpl | null): CameraSnapshot | null {
   if (!controls) return null;
   return {
     position: controls.object.position
@@ -33,7 +56,11 @@ function readCamera(controls) {
   };
 }
 
-export default function DebugPanel({ orbitControlsRef }) {
+interface DebugPanelProps {
+  orbitControlsRef: RefObject<OrbitControlsImpl | null>;
+}
+
+export default function DebugPanel({ orbitControlsRef }: DebugPanelProps) {
   const {
     lightAzimuth,
     setLightAzimuth,
@@ -42,7 +69,7 @@ export default function DebugPanel({ orbitControlsRef }) {
     lightIntensity,
     setLightIntensity,
   } = useContext(SliderContext);
-  const [camera, setCamera] = useState(null);
+  const [camera, setCamera] = useState<CameraSnapshot | null>(null);
 
   useEffect(() => {
     const updateCamera = () => setCamera(readCamera(orbitControlsRef.current));
