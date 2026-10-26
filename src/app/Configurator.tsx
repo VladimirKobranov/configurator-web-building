@@ -4,12 +4,12 @@ import {
   SliderContext,
   type DoorSide,
   type Theme,
-} from "./configurator-context";
-import App from "./App";
-import Controls from "./Controls";
-import Footer from "./Footer";
-import DebugPanel from "./DebugPanel";
-import ThemeControl from "./ThemeControl";
+} from "@/contexts/configurator-context";
+import BuildingScene from "@/components/scene/BuildingScene";
+import Controls from "@/components/configurator/Controls";
+import Footer from "@/components/layout/Footer";
+import DebugPanel from "@/components/configurator/DebugPanel";
+import ThemeControl from "@/components/configurator/ThemeControl";
 
 const THEME_STORAGE_KEY = "building-configurator-theme";
 
@@ -139,7 +139,7 @@ export default function Configurator() {
     <SliderContext.Provider value={contextValue}>
       <main className="relative h-dvh w-full overflow-hidden bg-background">
         <div className="absolute inset-0">
-          <App orbitControlsRef={orbitControlsRef} />
+          <BuildingScene orbitControlsRef={orbitControlsRef} />
         </div>
         {showDebugPanel && <DebugPanel orbitControlsRef={orbitControlsRef} />}
         <Controls

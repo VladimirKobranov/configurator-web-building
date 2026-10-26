@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
-import Configurator from "./Configurator";
-import "./styles.css";
+import Configurator from "./app/Configurator";
+import "./styles/globals.css";
 
 const rootElement = document.getElementById("root");
 

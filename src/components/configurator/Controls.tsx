@@ -1,7 +1,7 @@
 import { useContext, useEffect, useId } from "react";
 import type { ReactNode } from "react";
 import { Settings2 } from "lucide-react";
-import { SliderContext, type DoorSide } from "./configurator-context";
+import { SliderContext, type DoorSide } from "@/contexts/configurator-context";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

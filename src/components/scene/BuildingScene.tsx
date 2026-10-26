@@ -8,7 +8,7 @@ import {
   OrbitControls,
   useProgress,
 } from "@react-three/drei";
-import { SliderContext } from "./configurator-context";
+import { SliderContext } from "@/contexts/configurator-context";
 import { Model } from "./Model";
 import { MathUtils } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";

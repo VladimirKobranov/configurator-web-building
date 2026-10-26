@@ -1,6 +1,6 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Theme } from "./configurator-context";
+import type { Theme } from "@/contexts/configurator-context";
 
 interface ThemeControlProps {
   theme: Theme;

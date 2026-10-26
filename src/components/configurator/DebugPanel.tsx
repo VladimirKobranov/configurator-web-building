@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import type { MutableRefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { SliderContext } from "./configurator-context";
+import { SliderContext } from "@/contexts/configurator-context";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
