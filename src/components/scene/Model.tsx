@@ -8,11 +8,12 @@ type ModelProps = ThreeElements["group"] & {
   name: string;
 };
 
+const GLB_PATH = "/objects/building.glb";
+
 export const Model = memo(function Model({ name, ...props }: ModelProps) {
-  const glbPath = "/objects/window.glb";
   const texPath = "/objects/map.png";
 
-  const { nodes } = useGLTF(glbPath);
+  const { nodes } = useGLTF(GLB_PATH);
   const meshes = nodes as unknown as Record<string, Mesh>;
   const texture = useLoader(TextureLoader, texPath);
   // GLTF textures use the opposite vertical orientation from this map.
@@ -31,4 +32,4 @@ export const Model = memo(function Model({ name, ...props }: ModelProps) {
   );
 });
 
-useGLTF.preload("/objects/window.glb");
+useGLTF.preload(GLB_PATH);
