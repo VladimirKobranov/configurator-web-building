@@ -1,13 +1,7 @@
 import { Suspense, useEffect, useState, useCallback } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import {
-  Bounds,
-  Environment,
-  Html,
-  OrbitControls,
-  useProgress,
-} from "@react-three/drei";
+import { Bounds, Environment, OrbitControls } from "@react-three/drei";
 import { Model } from "./Model";
 import { MathUtils } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -29,35 +23,15 @@ interface GridItem {
 
 interface AppProps {
   orbitControlsRef: MutableRefObject<OrbitControlsImpl | null>;
+  onReady: () => void;
 }
 
-function Loader() {
-  const { progress } = useProgress();
-  return (
-    <Html center>
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background/90 p-4 shadow-lg">
-        <div
-          className="grid size-16 place-items-center rounded-full"
-          style={{
-            background: `conic-gradient(var(--primary) ${progress}%, var(--muted) ${progress}%)`,
-          }}
-          role="progressbar"
-          aria-label="Loading building model"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.floor(progress)}
-        >
-          <div className="grid size-12 place-items-center rounded-full bg-background text-xs font-semibold tabular-nums">
-            {Math.floor(progress)}%
-          </div>
-        </div>
-        <span className="text-xs text-muted-foreground">Loading…</span>
-      </div>
-    </Html>
-  );
+function SceneReady({ onReady }: Pick<AppProps, "onReady">) {
+  useEffect(() => onReady(), [onReady]);
+  return null;
 }
 
-export default function App({ orbitControlsRef }: AppProps) {
+export default function App({ orbitControlsRef, onReady }: AppProps) {
   const [gridData, setGridData] = useState<GridItem[]>([]);
   const [boundsRevision, setBoundsRevision] = useState("");
 
@@ -430,7 +404,7 @@ export default function App({ orbitControlsRef }: AppProps) {
         fov: 30,
       }}
     >
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={null}>
         <color
           attach="background"
           args={[
@@ -546,6 +520,7 @@ export default function App({ orbitControlsRef }: AppProps) {
           target={[-0.345, 7.7528, 3.557]}
           makeDefault
         />
+        {gridData.length > 0 && <SceneReady onReady={onReady} />}
       </Suspense>
     </Canvas>
   );

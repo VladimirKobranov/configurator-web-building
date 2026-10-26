@@ -1,9 +1,14 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  lazy,
+  Suspense,
+  useRef,
+} from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import BuildingScene from "@/components/scene/BuildingScene";
-import Controls from "@/components/configurator/Controls";
 import Footer from "@/components/layout/Footer";
-import DebugPanel from "@/components/configurator/DebugPanel";
 import ThemeControl from "@/components/configurator/ThemeControl";
 import {
   selectThemeIsDark,
@@ -12,6 +17,10 @@ import {
 } from "@/store/configurator-store";
 
 const THEME_STORAGE_KEY = "building-configurator-theme";
+
+const BuildingScene = lazy(() => import("@/components/scene/BuildingScene"));
+const Controls = lazy(() => import("@/components/configurator/Controls"));
+const DebugPanel = lazy(() => import("@/components/configurator/DebugPanel"));
 
 function readTheme(value: string | null): Theme {
   try {
@@ -26,7 +35,25 @@ export default function Configurator() {
   const showDebugPanel =
     new URLSearchParams(window.location.search).get("dev") === "true";
   const orbitControlsRef = useRef<OrbitControlsImpl | null>(null);
+  const [loadingStarted, setLoadingStarted] = useState(false);
+  const [uiReady, setUiReady] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const isDark = useConfiguratorStore(selectThemeIsDark);
+
+  const handleSceneReady = useCallback(() => setSceneReady(true), []);
+
+  useEffect(() => {
+    setLoadingStarted(true);
+
+    const controlsPromise = import("@/components/configurator/Controls");
+    const debugPromise = showDebugPanel
+      ? import("@/components/configurator/DebugPanel")
+      : Promise.resolve();
+
+    void Promise.all([controlsPromise, debugPromise]).then(() =>
+      setUiReady(true),
+    );
+  }, [showDebugPanel]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -64,11 +91,40 @@ export default function Configurator() {
 
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <div className="absolute inset-0">
-        <BuildingScene orbitControlsRef={orbitControlsRef} />
-      </div>
-      {showDebugPanel && <DebugPanel orbitControlsRef={orbitControlsRef} />}
-      <Controls />
+      {loadingStarted && (
+        <div className="absolute inset-0">
+          <Suspense fallback={null}>
+            <BuildingScene
+              orbitControlsRef={orbitControlsRef}
+              onReady={handleSceneReady}
+            />
+          </Suspense>
+        </div>
+      )}
+      {sceneReady && uiReady ? (
+        <>
+          <Suspense fallback={null}>
+            {showDebugPanel && (
+              <DebugPanel orbitControlsRef={orbitControlsRef} />
+            )}
+            <Controls />
+          </Suspense>
+        </>
+      ) : (
+        <div
+          className="absolute inset-0 z-10 grid place-items-center bg-background"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex flex-col items-center gap-3 text-muted-foreground">
+            <span
+              className="size-8 animate-spin rounded-full border-2 border-muted border-t-primary"
+              aria-hidden="true"
+            />
+            <span className="text-sm">Loading configurator…</span>
+          </div>
+        </div>
+      )}
       <ThemeControl />
       <Footer />
     </main>
