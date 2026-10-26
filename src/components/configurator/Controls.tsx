@@ -42,7 +42,7 @@ function RangeControl({
         </Label>
         <output
           htmlFor={id}
-          className="min-w-10 rounded-md bg-muted px-2 py-0.5 text-right text-xs font-semibold tabular-nums text-foreground"
+          className="min-w-7 rounded-sm bg-muted/60 px-1.5 py-0 text-right text-xs font-semibold tabular-nums text-foreground"
         >
           {format(value)}
         </output>
